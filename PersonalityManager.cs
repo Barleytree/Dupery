@@ -10,7 +10,7 @@ namespace Dupery
 {
     class PersonalityManager
     {
-        public const string IMPORTED_PERSONALITIES_FILE_NAME = "duplicate.PERSONALITIES.json";
+        public const string IMPORTED_PERSONALITIES_FILE_NAME = "dupery.PERSONALITIES.json";
 
         private const string PERSONALITIES_FILE_NAME = "PERSONALITIES.json";
         private const int MINIMUM_PERSONALITY_COUNT = 4;

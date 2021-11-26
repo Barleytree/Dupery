@@ -1,2 +1,2 @@
-# PrintAnyDupe
-Edible ONI mod.
+# Dupery
+Verbal dupery. Salacious dupery. Nominal dupery.
