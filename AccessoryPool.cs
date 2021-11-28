@@ -54,9 +54,9 @@ namespace Dupery
                 { "Hair", $"hair_{MISSING_ACCESSORY_ID}" },
                 { "Body", $"body_{MISSING_ACCESSORY_ID}" },
                 { "Arm", $"arm_{MISSING_ACCESSORY_ID}" },
-                { "HeadShape", $"headshape_{MISSING_ACCESSORY_ID}" },
-                { "Mouth", $"mouth_{MISSING_ACCESSORY_ID}" },
-                { "Eyes", $"eyes_004" }
+                { "HeadShape", $"headshape_001" },
+                { "Mouth", $"mouth_001" },
+                { "Eyes", $"eyes_001" }
             };
         }
 

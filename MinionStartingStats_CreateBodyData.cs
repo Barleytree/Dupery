@@ -26,18 +26,6 @@ namespace Dupery
             HashedString armId = FindNewId(Db.Get().AccessorySlots.Arm, p.body);
             if (armId != null)
                 __result.arms = armId;
-
-            HashedString headShapeId = FindNewId(Db.Get().AccessorySlots.HeadShape, p.headShape);
-            if (headShapeId != null)
-                __result.headShape = headShapeId;
-
-            HashedString mouthId = FindNewId(Db.Get().AccessorySlots.Mouth, p.mouth);
-            if (mouthId != null)
-                __result.mouth = mouthId;
-
-            HashedString eyesId = FindNewId(Db.Get().AccessorySlots.Eyes, p.eyes);
-            if (eyesId != null)
-                __result.eyes = eyesId;
         }
 
         private static HashedString FindNewId(AccessorySlot slot, int accessoryNumber)
