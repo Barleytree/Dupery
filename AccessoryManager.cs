@@ -72,6 +72,16 @@ namespace Dupery
                 {
                     slot = Db.Get().AccessorySlots.Arm;
                 }
+                else if (id.StartsWith("headshape_"))
+                {
+                    string str = HashCache.Get().Get(build.symbols[index].hash).Replace("headshape", "cheek");
+                    Debug.Log($"STR IS {str}");
+                    slot = Db.Get().AccessorySlots.HeadShape;
+                }
+                else if (id.StartsWith("mouth_"))
+                {
+                    slot = Db.Get().AccessorySlots.Mouth;
+                }
                 else
                 {
                     continue;
