@@ -84,7 +84,7 @@ namespace Dupery
                 }
                 else if (id.StartsWith("cheek_"))
                 {
-                    continue; //slot = Db.Get().Accessories
+                    continue;
                 }
                 else
                 {

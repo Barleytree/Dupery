@@ -63,10 +63,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Accessorizer_GetBodySlots.cs" />
     <Compile Include="AccessoryManager.cs" />
     <Compile Include="AccessoryPool.cs" />
     <Compile Include="Db_Initialize.cs" />
+    <Compile Include="MinionIdentity_OnSpawn.cs" />
     <Compile Include="MinionStartingStats_Constructor.cs" />
     <Compile Include="MinionStartingStats_CreateBodyData.cs" />
     <Compile Include="PersonalityGenerator.cs" />
@@ -74,6 +74,7 @@
     <Compile Include="PersonalityOutline.cs" />
     <Compile Include="DuperyPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SymbolOverrideController_AddSymbolOverride.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

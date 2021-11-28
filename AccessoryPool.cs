@@ -13,12 +13,6 @@ namespace Dupery
     {
         private const string MISSING_ACCESSORY_ID = "missing";
 
-        private Dictionary<int, string> hair;
-        private Dictionary<int, string> body;
-        private Dictionary<int, string> headShape;
-        private Dictionary<int, string> mouth;
-        private Dictionary<int, string> eyes;
-
         private Dictionary<string, Dictionary<int, string>> pool;
         private Dictionary<string, int> startingAccessoryNumbers;
         private Dictionary<string, string> missingAccessoryIds;
