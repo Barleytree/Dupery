@@ -28,10 +28,7 @@ namespace Dupery
                 {
                     { "Hair", new Dictionary<int, string>() },
                     { "Body", new Dictionary<int, string>() },
-                    { "Arm", new Dictionary<int, string>() },
-                    { "HeadShape", new Dictionary<int, string>() },
-                    { "Mouth", new Dictionary<int, string>() },
-                    { "Eyes", new Dictionary<int, string>() }
+                    { "Arm", new Dictionary<int, string>() }
                 };
             }
             else
@@ -43,20 +40,14 @@ namespace Dupery
             {
                 { "Hair", Db.Get().AccessorySlots.Hair.accessories.Count + 1 },
                 { "Body", Db.Get().AccessorySlots.Body.accessories.Count + 1 },
-                { "Arm", Db.Get().AccessorySlots.Body.accessories.Count + 1 },
-                { "HeadShape", Db.Get().AccessorySlots.HeadShape.accessories.Count + 1 },
-                { "Mouth", Db.Get().AccessorySlots.Mouth.accessories.Count + 1 },
-                { "Eyes", Db.Get().AccessorySlots.Eyes.accessories.Count + 1 }
+                { "Arm", Db.Get().AccessorySlots.Body.accessories.Count + 1 }
             };
 
             missingAccessoryIds = new Dictionary<string, string>
             {
                 { "Hair", $"hair_{MISSING_ACCESSORY_ID}" },
                 { "Body", $"body_{MISSING_ACCESSORY_ID}" },
-                { "Arm", $"arm_{MISSING_ACCESSORY_ID}" },
-                { "HeadShape", $"headshape_001" },
-                { "Mouth", $"mouth_001" },
-                { "Eyes", $"eyes_001" }
+                { "Arm", $"arm_{MISSING_ACCESSORY_ID}" }
             };
         }
 
