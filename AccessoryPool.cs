@@ -13,38 +13,56 @@ namespace Dupery
     {
         private const string MISSING_ACCESSORY_ID = "missing";
 
-        [JsonProperty]
-        public Dictionary<int, string> Hair { get; set; }
-        [JsonProperty]
-        public Dictionary<int, string> Body { get; set; }
+        private Dictionary<int, string> hair;
+        private Dictionary<int, string> body;
+        private Dictionary<int, string> headShape;
+        private Dictionary<int, string> mouth;
+        private Dictionary<int, string> eyes;
 
         private Dictionary<string, Dictionary<int, string>> pool;
         private Dictionary<string, int> startingAccessoryNumbers;
         private Dictionary<string, string> missingAccessoryIds;
 
-        public AccessoryPool()
-        {
-            if (Hair == null)
-                Hair = new Dictionary<int, string>();
-            if (Body == null)
-                Body = new Dictionary<int, string>();
+        private string idCacheFilePath;
 
-            pool = new Dictionary<string, Dictionary<int, string>>
+        public AccessoryPool(string idCacheFilePath)
+        {
+            this.idCacheFilePath = idCacheFilePath;
+            if (!File.Exists(idCacheFilePath))
             {
-                { "Hair", Hair },
-                { "Body", Body }
-            };
+                pool = new Dictionary<string, Dictionary<int, string>>
+                {
+                    { "Hair", new Dictionary<int, string>() },
+                    { "Body", new Dictionary<int, string>() },
+                    { "Arm", new Dictionary<int, string>() },
+                    { "HeadShape", new Dictionary<int, string>() },
+                    { "Mouth", new Dictionary<int, string>() },
+                    { "Eyes", new Dictionary<int, string>() }
+                };
+            }
+            else
+            {
+                LoadPool();
+            }
 
             startingAccessoryNumbers = new Dictionary<string, int>
             {
                 { "Hair", Db.Get().AccessorySlots.Hair.accessories.Count + 1 },
-                { "Body", Db.Get().AccessorySlots.Body.accessories.Count + 1 }
+                { "Body", Db.Get().AccessorySlots.Body.accessories.Count + 1 },
+                { "Arm", Db.Get().AccessorySlots.Body.accessories.Count + 1 },
+                { "HeadShape", Db.Get().AccessorySlots.HeadShape.accessories.Count + 1 },
+                { "Mouth", Db.Get().AccessorySlots.Mouth.accessories.Count + 1 },
+                { "Eyes", Db.Get().AccessorySlots.Eyes.accessories.Count + 1 }
             };
 
             missingAccessoryIds = new Dictionary<string, string>
             {
                 { "Hair", $"hair_{MISSING_ACCESSORY_ID}" },
-                { "Body", $"body_{MISSING_ACCESSORY_ID}" }
+                { "Body", $"body_{MISSING_ACCESSORY_ID}" },
+                { "Arm", $"arm_{MISSING_ACCESSORY_ID}" },
+                { "HeadShape", $"headshape_{MISSING_ACCESSORY_ID}" },
+                { "Mouth", $"mouth_{MISSING_ACCESSORY_ID}" },
+                { "Eyes", $"eyes_004" }
             };
         }
 
@@ -77,8 +95,18 @@ namespace Dupery
             return missingAccessoryIds[slot.Id];
         }
 
-        public int TryInsertId(AccessorySlot slot, string id)
+        public bool ContainsId(AccessorySlot slot, string id)
         {
+            return GetAccessoryNumber(slot, id) > 0;
+        }
+
+        public bool TrySaveId(AccessorySlot slot, string id)
+        {
+            if (ContainsId(slot, id))
+            {
+                return false;
+            }
+
             int accessoryNumber = startingAccessoryNumbers[slot.Id];
             while (true)
             {
@@ -93,7 +121,25 @@ namespace Dupery
             }
 
             pool[slot.Id][accessoryNumber] = id;
-            return accessoryNumber;
+            SavePool();
+            return true;
+        }
+
+        private void LoadPool()
+        {
+            using (StreamReader streamReader = new StreamReader(idCacheFilePath))
+            {
+                pool = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<int, string>>>(streamReader.ReadToEnd());
+            }
+        }
+
+        private void SavePool()
+        {
+            using (StreamWriter streamWriter = new StreamWriter(idCacheFilePath))
+            {
+                string json = JsonConvert.SerializeObject(pool, Formatting.Indented);
+                streamWriter.Write(json);
+            }
         }
     }
 }

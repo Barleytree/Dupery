@@ -10,24 +10,17 @@ namespace Dupery
 {
     class AccessoryManager
     {
+        public static string MISSING_ACCESSORIES_ANIM_NAME = "dupery_missing_accessories_kanim";
         private const string ID_CACHE_FILE_NAME = "accessory_id_cache.json";
 
-        private readonly string idCacheFilePath;
         private AccessoryPool accessoryPool;
 
         public AccessoryManager()
         {
-            idCacheFilePath = Path.Combine(DuperyPatches.DirectoryName, ID_CACHE_FILE_NAME);
+            string idCacheFilePath = Path.Combine(DuperyPatches.DirectoryName, ID_CACHE_FILE_NAME);
+            accessoryPool = new AccessoryPool(idCacheFilePath);
 
-            if (!File.Exists(idCacheFilePath))
-            {
-                accessoryPool = new AccessoryPool();
-                SaveAccessoryPool();
-            }
-            else
-            {
-                LoadAccessoryPool();
-            }
+            LoadAccessories(MISSING_ACCESSORIES_ANIM_NAME);
         }
 
         public string TryGetAccessoryId(AccessorySlot slot, int accessoryNumber)
@@ -46,72 +39,76 @@ namespace Dupery
             return id;
         }
 
-        public int TryImportAccessories(string animName)
+        public int LoadAccessories(string animName, bool saveToCache = false)
         {
             ResourceSet accessories = Db.Get().Accessories;
 
             KAnimFile anim = Assets.GetAnim(animName);
             KAnim.Build build = anim.GetData().build;
 
-            int numImported = 0;
+            int numLoaded = 0;
+            int numCached = 0;
             for (int index = 0; index < build.symbols.Length; ++index)
             {
                 string id = HashCache.Get().Get(build.symbols[index].hash);
 
-                AccessorySlot slot = null;
+                AccessorySlot slot;
+                bool cachable = true;
 
-                bool saveToPool = true;
                 if (id.StartsWith("hair_"))
                 {
                     slot = Db.Get().AccessorySlots.Hair;
                 }
-                if (id.StartsWith("hat_hair_"))
+                else if (id.StartsWith("hat_hair_"))
                 {
                     slot = Db.Get().AccessorySlots.HatHair;
-                    saveToPool = false;
+                    cachable = false;
+                }
+                else if (id.StartsWith("body_"))
+                {
+                    slot = Db.Get().AccessorySlots.Body;
+                }
+                else if (id.StartsWith("arm_"))
+                {
+                    slot = Db.Get().AccessorySlots.Arm;
+                }
+                else if (id.StartsWith("headshape_"))
+                {
+                    string str = HashCache.Get().Get(build.symbols[index].hash).Replace("headshape", "cheek");
+                    Debug.Log($"STR IS {str}");
+                    slot = Db.Get().AccessorySlots.HeadShape;
+                }
+                else if (id.StartsWith("mouth_"))
+                {
+                    slot = Db.Get().AccessorySlots.Mouth;
+                }
+                else if (id.StartsWith("cheek_"))
+                {
+                    continue; //slot = Db.Get().Accessories
+                }
+                else
+                {
+                    continue;
                 }
 
                 Accessory accessory = new Accessory(id, accessories, slot, anim.batchTag, build.symbols[index]);
                 slot.accessories.Add(accessory);
                 Db.Get().ResourceTable.Add(accessory);
 
-                if (saveToPool)
+                if (cachable && saveToCache)
                 {
-                    int accessoryNumber = accessoryPool.GetAccessoryNumber(slot, id);
-                    if (accessoryNumber > 0)
-                    {
-                        Debug.Log($"Loaded cached {slot.Name} accessory [{id}] using slot {accessoryNumber}");
-                    }
-                    else
-                    {
-                        accessoryNumber = accessoryPool.TryInsertId(slot, id);
-                        SaveAccessoryPool();
-                        Debug.Log($"Cached new {slot.Name} accessory [{id}] at slot {accessoryNumber}.");
-                    }
+                    bool saved = accessoryPool.TrySaveId(slot, id);
+                    if (saved)
+                        numCached++;
                 }
 
-                numImported++;
+                numLoaded++;
             }
 
-            Debug.Log($"Loaded anim {animName}");
-            return numImported;
-        }
+            if (numCached > 0)
+                Debug.Log($"Added {numCached} new accessories IDs to the cache.");
 
-        private void SaveAccessoryPool()
-        {
-            using (StreamWriter streamWriter = new StreamWriter(idCacheFilePath))
-            {
-                string json = JsonConvert.SerializeObject(accessoryPool, Formatting.Indented);
-                streamWriter.Write(json);
-            }
-        }
-
-        private void LoadAccessoryPool()
-        {
-            using (StreamReader streamReader = new StreamReader(idCacheFilePath))
-            {
-                accessoryPool = JsonConvert.DeserializeObject<AccessoryPool>(streamReader.ReadToEnd());
-            }
+            return numLoaded;
         }
     }
 }

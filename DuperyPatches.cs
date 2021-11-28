@@ -60,7 +60,7 @@ namespace Dupery
                     foreach (string animName in animNames)
                     {
                         Debug.Log($"Checking {animName}...");
-                        totalImported += AccessoryManager.TryImportAccessories(animName);
+                        totalImported += AccessoryManager.LoadAccessories(animName, true);
                     }
 
                     Debug.Log($"{totalImported} accessories imported successfully.");
