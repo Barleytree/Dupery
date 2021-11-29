@@ -10,41 +10,68 @@ namespace Dupery
     class PersonalityOutline
     {
         [JsonProperty]
-        public string Name { get; set; } = "Nameless";
-        [JsonProperty]
-        public string Description { get; set; } = "This {0} is impeccably out of place.";
-        [JsonProperty]
-        public string Gender { get; set; } = "NB";
-        [JsonProperty]
-        public string PersonalityType { get; set; } = "Doofy"; // Doesn't seem to do anything
-        [JsonProperty]
-        public string StressTrait { get; set; } = "StressVomiter";
-        [JsonProperty]
-        public string JoyTrait { get; set; } = "StickerBomber";
-        [JsonProperty]
-        public string StickerType { get; set; } = "glitter";
-        [JsonProperty]
-        public int HeadShape { get; set; } = 1;
-        [JsonProperty]
-        public int Mouth { get; set; } = 1;
-        [JsonProperty]
-        public int Eyes { get; set; } = 1;
-        [JsonProperty]
-        public int Hair { get; set; } = 1;
-        [JsonProperty]
-        public int Body { get; set; } = 1;
+        public bool Enabled { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Description { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Gender { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string PersonalityType { get; set; } // Doesn't seem to do anything
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string StressTrait { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string JoyTrait { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string StickerType { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int HeadShape { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int Mouth { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int Eyes { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int Hair { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int Body { get; set; }
 
         public PersonalityOutline() { }
 
-        public Personality toPersonality()
+        public void OverrideValues(PersonalityOutline overridingPersonality)
+        {
+            PersonalityOutline p = overridingPersonality;
+
+            Enabled = p.Enabled;
+            if (p.Name != null) Name = p.Name;
+            if (p.Description != null) Description = p.Description;
+            if (p.Gender != null) Gender = p.Gender;
+            if (p.PersonalityType != null) PersonalityType = p.PersonalityType;
+            if (p.StressTrait != null) StressTrait = p.StressTrait;
+            if (p.JoyTrait != null) JoyTrait = p.JoyTrait;
+            if (p.StickerType != null) StickerType = p.StickerType;
+            //if (p.HeadShape != null) HeadShape = p.HeadShape;
+            //if (p.Mouth != null) Mouth = p.Mouth;
+            //if (p.Eyes != null) Eyes = p.Eyes;
+            //if (p.Hair != null) Hair = p.Hair;
+            //if (p.Body != null) Body = p.Body;
+        }
+
+        public Personality toPersonality(string nameStringKey)
         {
             // Meaningless attributes
             string congenitalTrait = "None";
             int neck = -1;
 
+            // Localizable attributes
+            StringEntry result;
+            string name = Strings.TryGet(new StringKey(Name), out result) ? result.ToString() : Name;
+            string description = Strings.TryGet(new StringKey(Description), out result) ? result.ToString() : Description;
+
             Personality personality = new Personality(
-                this.Name.ToUpper(),
-                this.Name,
+                nameStringKey.ToUpper(),
+                name,
                 this.Gender.ToUpper(),
                 this.PersonalityType,
                 this.StressTrait,
@@ -57,7 +84,7 @@ namespace Dupery
                 this.Eyes,
                 this.Hair,
                 this.Body,
-                this.Description
+                description
             );
 
             return personality;
@@ -65,10 +92,13 @@ namespace Dupery
 
         public static PersonalityOutline fromPersonality(Personality personality)
         {
+            string name = string.Format("STRINGS.DUPLICANTS.PERSONALITIES.{0}.NAME", personality.nameStringKey.ToUpper());
+            string description = string.Format("STRINGS.DUPLICANTS.PERSONALITIES.{0}.DESC", personality.nameStringKey.ToUpper());
+
             PersonalityOutline jsonPersonality = new PersonalityOutline
             {
-                Name = personality.Name,
-                Description = personality.unformattedDescription,
+                Name = name,
+                Description = description,
                 Gender = personality.genderStringKey,
                 PersonalityType = personality.personalityType,
                 StressTrait = personality.stresstrait,

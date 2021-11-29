@@ -11,6 +11,7 @@ namespace Dupery
     class PersonalityManager
     {
         public const string IMPORTED_PERSONALITIES_FILE_NAME = "dupery.PERSONALITIES.json";
+        public const string OVERRIDE_PERSONALITIES_FILE_NAME = "{0}.OVERRIDE.json";
 
         private const string PERSONALITIES_FILE_NAME = "PERSONALITIES.json";
         private const int MINIMUM_PERSONALITY_COUNT = 4;
@@ -20,16 +21,16 @@ namespace Dupery
             "Urpudding", "Butterella", "Oozetato", "Jellyman" };
         private readonly string fillerDescription = "{0} appeared because there was nobody else to print!";
 
-        private List<PersonalityOutline> storedPersonalities;
-        private List<PersonalityOutline> importedPersonalities;
+        private Dictionary<string, PersonalityOutline> storedPersonalities;
+        private Dictionary<string, Dictionary<string, PersonalityOutline>> importedPersonalities;
         private bool newFileNeeded = false;
 
         public PersonalityManager()
         {
             this.personalitiesFilePath = Path.Combine(DuperyPatches.DirectoryName, PERSONALITIES_FILE_NAME);
 
-            this.storedPersonalities = new List<PersonalityOutline>();
-            this.importedPersonalities = new List<PersonalityOutline>();
+            this.storedPersonalities = new Dictionary<string, PersonalityOutline>();
+            this.importedPersonalities = new Dictionary<string, Dictionary<string, PersonalityOutline>>();
 
             TryFetchPersonalities();
         }
@@ -47,16 +48,17 @@ namespace Dupery
 
             List<Personality> personalities = new List<Personality>();
 
-            foreach (PersonalityOutline jsonPersonality in this.storedPersonalities)
-                personalities.Add(jsonPersonality.toPersonality());
+            foreach (string key in storedPersonalities.Keys)
+                personalities.Add(storedPersonalities[key].toPersonality(key));
 
-            foreach (PersonalityOutline jsonPersonality in this.importedPersonalities)
-                personalities.Add(jsonPersonality.toPersonality());
+            foreach (Dictionary<string, PersonalityOutline> personalityMap in importedPersonalities.Values)
+                foreach (string key in personalityMap.Keys)
+                    personalities.Add(personalityMap[key].toPersonality(key));
 
             while (personalities.Count < MINIMUM_PERSONALITY_COUNT)
             {
-                string name = this.fillerNames[personalities.Count];
-                Personality fillerPersonality = PersonalityGenerator.randomPersonality(name, this.fillerDescription);
+                string name = fillerNames[personalities.Count];
+                Personality fillerPersonality = PersonalityGenerator.randomPersonality(name, fillerDescription);
 
                 Debug.Log($"Not enough personalities, adding {name} to personality pool.");
                 personalities.Add(fillerPersonality);
@@ -65,16 +67,16 @@ namespace Dupery
             return personalities;
         }
 
-        public static IEnumerable<PersonalityOutline> ReadPersonalities(string personalitiesFilePath)
+        public static Dictionary<string, PersonalityOutline> ReadPersonalities(string personalitiesFilePath)
         {
-            IEnumerable<PersonalityOutline> jsonPersonalities;
+            Dictionary<string, PersonalityOutline> jsonPersonalities;
             using (StreamReader streamReader = new StreamReader(personalitiesFilePath))
-                jsonPersonalities = JsonConvert.DeserializeObject<IEnumerable<PersonalityOutline>>(streamReader.ReadToEnd());
+                jsonPersonalities = JsonConvert.DeserializeObject<Dictionary<string, PersonalityOutline>>(streamReader.ReadToEnd());
 
             return jsonPersonalities;
         }
 
-        public static void WritePersonalities(string personalitiesFilePath, IEnumerable<PersonalityOutline> jsonPersonalities)
+        public static void WritePersonalities(string personalitiesFilePath, Dictionary<string, PersonalityOutline> jsonPersonalities)
         {
             using (StreamWriter streamWriter = new StreamWriter(personalitiesFilePath))
             {
@@ -100,22 +102,19 @@ namespace Dupery
         private void FetchPersonalities()
         {
             Debug.Log($"Reading personalities from {PERSONALITIES_FILE_NAME}...");
-            IEnumerable<PersonalityOutline> jsonPersonalities = ReadPersonalities(this.personalitiesFilePath);
-            foreach (PersonalityOutline jsonPersonality in jsonPersonalities)
-                this.storedPersonalities.Add(jsonPersonality);
-
+            storedPersonalities = ReadPersonalities(this.personalitiesFilePath);
             Debug.Log($"Personalities fetched.");
         }
 
         private void InitializeDefaultPersonalityFile()
         {
-            List<PersonalityOutline> dbPersonalities = new List<PersonalityOutline>();
+            Dictionary<string, PersonalityOutline> dbPersonalities = new Dictionary<string, PersonalityOutline>();
 
             int personalitiesCount = Db.Get().Personalities.Count;
             for (int i = 0; i < personalitiesCount; i++)
             {
                 Personality dbPersonality = Db.Get().Personalities[i];
-                dbPersonalities.Add(PersonalityOutline.fromPersonality(dbPersonality));
+                dbPersonalities[dbPersonality.nameStringKey] = PersonalityOutline.fromPersonality(dbPersonality);
             }
 
             Debug.Log($"Writing initial {personalitiesCount} personalities file...");
@@ -123,15 +122,37 @@ namespace Dupery
             Debug.Log($"Default personalities file initialized.");
         }
 
-        public void TryImportPersonalities(string importFilePath)
+        public void TryImportPersonalities(string importFilePath, string modId)
         {
-            List<PersonalityOutline> jsonPersonalities = ReadPersonalities(importFilePath).ToList();
-            foreach (PersonalityOutline jsonPersonality in jsonPersonalities)
+            this.importedPersonalities[modId] = ReadPersonalities(importFilePath);
+            Debug.Log($"{importedPersonalities[modId].Count} personalities imported successfully.");
+
+            string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, string.Format(OVERRIDE_PERSONALITIES_FILE_NAME, modId));
+            Dictionary<string, PersonalityOutline> currentOverrides = null;
+            if (File.Exists(overrideFilePath))
             {
-                this.importedPersonalities.Add(jsonPersonality);
+                currentOverrides = ReadPersonalities(overrideFilePath);
             }
 
-            Debug.Log($"{jsonPersonalities.Count} personalities imported successfully.");
+            Dictionary<string, PersonalityOutline> newOverrides = new Dictionary<string, PersonalityOutline>();
+            foreach (string key in importedPersonalities[modId].Keys)
+            {
+                PersonalityOutline overridingPersonality = null;
+                if (currentOverrides != null)
+                    currentOverrides.TryGetValue(key, out overridingPersonality);
+
+                if (overridingPersonality != null)
+                {
+                    importedPersonalities[modId][key].OverrideValues(overridingPersonality);
+                    newOverrides[key] = overridingPersonality;
+                }
+                else
+                {
+                    newOverrides[key] = new PersonalityOutline { Enabled = importedPersonalities[modId][key].Enabled };
+                }
+            }
+
+            WritePersonalities(overrideFilePath, newOverrides);
         }
     }
 }
