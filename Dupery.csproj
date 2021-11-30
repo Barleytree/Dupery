@@ -66,6 +66,7 @@
     <Compile Include="AccessoryManager.cs" />
     <Compile Include="AccessoryPool.cs" />
     <Compile Include="Db_Initialize.cs" />
+    <Compile Include="Localization_Initialize.cs" />
     <Compile Include="MinionStartingStats_Constructor.cs" />
     <Compile Include="MinionStartingStats_CreateBodyData.cs" />
     <Compile Include="PersonalityGenerator.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="PersonalityOutline.cs" />
     <Compile Include="DuperyPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="STRINGS.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -17,9 +17,6 @@ namespace Dupery
         private const int MINIMUM_PERSONALITY_COUNT = 4;
 
         private readonly string personalitiesFilePath;
-        private readonly string[] fillerNames = new string[MINIMUM_PERSONALITY_COUNT] {
-            "Urpudding", "Butterella", "Oozetato", "Jellyman" };
-        private readonly string fillerDescription = "{0} appeared because there was nobody else to print!";
 
         private Dictionary<string, PersonalityOutline> storedPersonalities;
         private Dictionary<string, Dictionary<string, PersonalityOutline>> importedPersonalities;
@@ -59,11 +56,11 @@ namespace Dupery
 
             while (personalities.Count < MINIMUM_PERSONALITY_COUNT)
             {
-                string name = fillerNames[personalities.Count];
-                Personality fillerPersonality = PersonalityGenerator.randomPersonality(name, fillerDescription);
+                string name = string.Format("ULTRADUPE-{0}{1:00000}", personalities.Count + 1, UnityEngine.Random.Range(0, 100000));
+                Personality substitutePersonality = PersonalityGenerator.randomPersonality(name, "STRINGS.BAD_DUPLICANT_DESCRIPTION");
 
                 Debug.Log($"Not enough personalities, adding {name} to personality pool.");
-                personalities.Add(fillerPersonality);
+                personalities.Add(substitutePersonality);
             }
 
             return personalities;
