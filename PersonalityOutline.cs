@@ -10,7 +10,7 @@ namespace Dupery
     class PersonalityOutline
     {
         [JsonProperty]
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }

@@ -11,7 +11,7 @@ namespace Dupery
     class PersonalityManager
     {
         public const string IMPORTED_PERSONALITIES_FILE_NAME = "dupery.PERSONALITIES.json";
-        public const string OVERRIDE_PERSONALITIES_FILE_NAME = "{0}.OVERRIDE.json";
+        public const string OVERRIDE_PERSONALITIES_FILE_NAME = "OVERRIDE.{0}.json";
 
         private const string PERSONALITIES_FILE_NAME = "PERSONALITIES.json";
         private const int MINIMUM_PERSONALITY_COUNT = 4;
@@ -49,11 +49,13 @@ namespace Dupery
             List<Personality> personalities = new List<Personality>();
 
             foreach (string key in storedPersonalities.Keys)
-                personalities.Add(storedPersonalities[key].toPersonality(key));
+                if (storedPersonalities[key].Enabled)
+                    personalities.Add(storedPersonalities[key].toPersonality(key));
 
             foreach (Dictionary<string, PersonalityOutline> personalityMap in importedPersonalities.Values)
                 foreach (string key in personalityMap.Keys)
-                    personalities.Add(personalityMap[key].toPersonality(key));
+                    if (personalityMap[key].Enabled)
+                        personalities.Add(personalityMap[key].toPersonality(key));
 
             while (personalities.Count < MINIMUM_PERSONALITY_COUNT)
             {
