@@ -121,6 +121,7 @@ namespace Dupery
 
             PersonalityOutline jsonPersonality = new PersonalityOutline
             {
+                Enabled = true,
                 Name = name,
                 Description = description,
                 Gender = personality.genderStringKey,
