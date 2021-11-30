@@ -49,42 +49,12 @@ namespace Dupery
 
         public static Personality randomPersonality(string name, string description)
         {
-            string gender = rollGender();
-            string personalityType = rollPersonalityType();
-
-            string stressTrait = rollStressTrait();
-            string joyTrait = rollJoyTrait();
-            string stickerType = "";
-            if (joyTrait == "StickerBomber")
+            PersonalityOutline outline = new PersonalityOutline()
             {
-                stickerType = rollStickerType();
-            }
-
-            int headShape = rollAccessory(Db.Get().AccessorySlots.HeadShape);
-            int mouth = headShape;
-            int eyes = rollAccessory(Db.Get().AccessorySlots.Eyes);
-            int hair = rollAccessory(Db.Get().AccessorySlots.Hair);
-            int body = rollAccessory(Db.Get().AccessorySlots.Body);
-
-            Personality randomPersonality = new Personality(
-                name.ToUpper(),
-                name,
-                gender.ToUpper(),
-                personalityType,
-                stressTrait,
-                joyTrait,
-                stickerType,
-                "None",
-                headShape,
-                mouth,
-                -1,
-                eyes,
-                hair,
-                body,
-                description
-            );
-
-            return randomPersonality;
+                Name = name,
+                Description = description
+            };
+            return outline.toPersonality(name.ToUpper());
         }
     }
 }

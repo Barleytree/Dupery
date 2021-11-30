@@ -86,7 +86,7 @@ namespace Dupery
 
             // Uncustomisable accessories
             int headShape = chooseAccessoryNumber(Db.Get().AccessorySlots.HeadShape, HeadShape);
-            int mouth = chooseAccessoryNumber(Db.Get().AccessorySlots.Mouth, Mouth);
+            int mouth = Mouth == null ? headShape : chooseAccessoryNumber(Db.Get().AccessorySlots.Mouth, Mouth);
             int eyes = chooseAccessoryNumber(Db.Get().AccessorySlots.Eyes, Eyes);
 
             // Customisable accessories
