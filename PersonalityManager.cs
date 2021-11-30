@@ -114,7 +114,7 @@ namespace Dupery
             for (int i = 0; i < personalitiesCount; i++)
             {
                 Personality dbPersonality = Db.Get().Personalities[i];
-                dbPersonalities[dbPersonality.nameStringKey] = PersonalityOutline.fromPersonality(dbPersonality);
+                dbPersonalities[dbPersonality.nameStringKey] = PersonalityOutline.fromStockPersonality(dbPersonality);
             }
 
             Debug.Log($"Writing initial {personalitiesCount} personalities file...");

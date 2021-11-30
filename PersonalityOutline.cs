@@ -27,15 +27,15 @@ namespace Dupery
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string StickerType { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int HeadShape { get; set; }
+        public string HeadShape { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int Mouth { get; set; }
+        public string Mouth { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int Eyes { get; set; }
+        public string Eyes { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int Hair { get; set; }
+        public string Hair { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int Body { get; set; }
+        public string Body { get; set; }
 
         public PersonalityOutline() { }
 
@@ -51,11 +51,11 @@ namespace Dupery
             if (p.StressTrait != null) StressTrait = p.StressTrait;
             if (p.JoyTrait != null) JoyTrait = p.JoyTrait;
             if (p.StickerType != null) StickerType = p.StickerType;
-            //if (p.HeadShape != null) HeadShape = p.HeadShape;
-            //if (p.Mouth != null) Mouth = p.Mouth;
-            //if (p.Eyes != null) Eyes = p.Eyes;
-            //if (p.Hair != null) Hair = p.Hair;
-            //if (p.Body != null) Body = p.Body;
+            if (p.HeadShape != null) HeadShape = p.HeadShape;
+            if (p.Mouth != null) Mouth = p.Mouth;
+            if (p.Eyes != null) Eyes = p.Eyes;
+            if (p.Hair != null) Hair = p.Hair;
+            if (p.Body != null) Body = p.Body;
         }
 
         public Personality toPersonality(string nameStringKey)
@@ -64,33 +64,57 @@ namespace Dupery
             string congenitalTrait = "None";
             int neck = -1;
 
+            // Fill missing values
+            string name = Name != null ? Name : "The Nameless One";
+            string description = Description != null ? Description : "{0} defies description.";
+            string gender = Gender != null ? Gender : PersonalityGenerator.rollGender();
+            string personalityType = PersonalityType != null ? PersonalityType : PersonalityGenerator.rollPersonalityType();
+            string stressTrait = StressTrait != null ? StressTrait : PersonalityGenerator.rollStressTrait();
+            string joyTrait = JoyTrait != null ? JoyTrait : PersonalityGenerator.rollJoyTrait();
+            string stickerType = "";
+            if (joyTrait == "StickerBomber")
+            {
+                stickerType = StickerType;
+                if (stickerType == null | stickerType == "")
+                    stickerType = PersonalityGenerator.rollStickerType();
+            }
+
             // Localizable attributes
             StringEntry result;
-            string name = Strings.TryGet(new StringKey(Name), out result) ? result.ToString() : Name;
-            string description = Strings.TryGet(new StringKey(Description), out result) ? result.ToString() : Description;
+            name = Strings.TryGet(new StringKey(name), out result) ? result.ToString() : name;
+            description = Strings.TryGet(new StringKey(description), out result) ? result.ToString() : description;
+
+            // Uncustomisable accessories
+            int headShape = chooseAccessoryNumber(Db.Get().AccessorySlots.HeadShape, HeadShape);
+            int mouth = chooseAccessoryNumber(Db.Get().AccessorySlots.Mouth, Mouth);
+            int eyes = chooseAccessoryNumber(Db.Get().AccessorySlots.Eyes, Eyes);
+
+            // Customisable accessories
+            int hair = chooseAccessoryNumber(Db.Get().AccessorySlots.Hair, Hair);
+            int body = chooseAccessoryNumber(Db.Get().AccessorySlots.Body, Body);
 
             Personality personality = new Personality(
                 nameStringKey.ToUpper(),
                 name,
-                this.Gender.ToUpper(),
-                this.PersonalityType,
-                this.StressTrait,
-                this.JoyTrait,
-                this.StickerType,
+                gender.ToUpper(),
+                personalityType,
+                stressTrait,
+                joyTrait,
+                stickerType,
                 congenitalTrait,
-                this.HeadShape,
-                this.Mouth,
+                headShape,
+                mouth,
                 neck,
-                this.Eyes,
-                this.Hair,
-                this.Body,
+                eyes,
+                hair,
+                body,
                 description
             );
 
             return personality;
         }
 
-        public static PersonalityOutline fromPersonality(Personality personality)
+        public static PersonalityOutline fromStockPersonality(Personality personality)
         {
             string name = string.Format("STRINGS.DUPLICANTS.PERSONALITIES.{0}.NAME", personality.nameStringKey.ToUpper());
             string description = string.Format("STRINGS.DUPLICANTS.PERSONALITIES.{0}.DESC", personality.nameStringKey.ToUpper());
@@ -104,14 +128,31 @@ namespace Dupery
                 StressTrait = personality.stresstrait,
                 JoyTrait = personality.joyTrait,
                 StickerType = personality.stickerType,
-                HeadShape = personality.headShape,
-                Mouth = personality.mouth,
-                Eyes = personality.eyes,
-                Hair = personality.hair,
-                Body = personality.body
+                HeadShape = personality.headShape.ToString(),
+                Mouth = personality.mouth.ToString(),
+                Eyes = personality.eyes.ToString(),
+                Hair = personality.hair.ToString(),
+                Body = personality.body.ToString()
             };
 
             return jsonPersonality;
+        }
+
+        private static int chooseAccessoryNumber(AccessorySlot slot, string value)
+        {
+            int accessoryNumber;
+
+            if (value == null)
+            {
+                accessoryNumber = PersonalityGenerator.rollAccessory(slot);
+            }
+            else
+            {
+                int.TryParse(value, out accessoryNumber);
+                accessoryNumber = accessoryNumber > 0 ? accessoryNumber : DuperyPatches.AccessoryManager.GetAccessoryNumber(slot, value);
+            }
+
+            return accessoryNumber;
         }
     }
 }

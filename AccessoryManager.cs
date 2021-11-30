@@ -23,6 +23,11 @@ namespace Dupery
             LoadAccessories(MISSING_ACCESSORIES_ANIM_NAME);
         }
 
+        public int GetAccessoryNumber(AccessorySlot slot, string accessoryId)
+        {
+            return accessoryPool.GetAccessoryNumber(slot, accessoryId);
+        }
+
         public string TryGetAccessoryId(AccessorySlot slot, int accessoryNumber)
         {
             if (accessoryPool.IsNativeAccessory(slot, accessoryNumber))

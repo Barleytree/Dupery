@@ -66,7 +66,7 @@ namespace Dupery
                 }
             }
 
-            return -1;
+            return 0;
         }
 
         public string GetId(AccessorySlot slot, int accessoryNumber)
