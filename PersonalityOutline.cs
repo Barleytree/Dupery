@@ -10,7 +10,7 @@ namespace Dupery
     class PersonalityOutline
     {
         [JsonProperty]
-        public bool Enabled { get; set; } = true;
+        public bool Printable { get; set; } = true;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
@@ -43,7 +43,7 @@ namespace Dupery
         {
             PersonalityOutline p = overridingPersonality;
 
-            Enabled = p.Enabled;
+            Printable = p.Printable;
             if (p.Name != null) Name = p.Name;
             if (p.Description != null) Description = p.Description;
             if (p.Gender != null) Gender = p.Gender;
@@ -58,7 +58,7 @@ namespace Dupery
             if (p.Body != null) Body = p.Body;
         }
 
-        public Personality toPersonality(string nameStringKey)
+        public Personality ToPersonality(string nameStringKey)
         {
             // Meaningless attributes
             string congenitalTrait = "None";
@@ -67,16 +67,16 @@ namespace Dupery
             // Fill missing values
             string name = Name != null ? Name : "The Nameless One";
             string description = Description != null ? Description : "{0} defies description.";
-            string gender = Gender != null ? Gender : PersonalityGenerator.rollGender();
-            string personalityType = PersonalityType != null ? PersonalityType : PersonalityGenerator.rollPersonalityType();
-            string stressTrait = StressTrait != null ? StressTrait : PersonalityGenerator.rollStressTrait();
-            string joyTrait = JoyTrait != null ? JoyTrait : PersonalityGenerator.rollJoyTrait();
+            string gender = Gender != null ? Gender : PersonalityGenerator.RollGender();
+            string personalityType = PersonalityType != null ? PersonalityType : PersonalityGenerator.RollPersonalityType();
+            string stressTrait = StressTrait != null ? StressTrait : PersonalityGenerator.RollStressTrait();
+            string joyTrait = JoyTrait != null ? JoyTrait : PersonalityGenerator.RollJoyTrait();
             string stickerType = "";
             if (joyTrait == "StickerBomber")
             {
                 stickerType = StickerType;
                 if (stickerType == null | stickerType == "")
-                    stickerType = PersonalityGenerator.rollStickerType();
+                    stickerType = PersonalityGenerator.RollStickerType();
             }
 
             // Localizable attributes
@@ -85,13 +85,13 @@ namespace Dupery
             description = Strings.TryGet(new StringKey(description), out result) ? result.ToString() : description;
 
             // Uncustomisable accessories
-            int headShape = chooseAccessoryNumber(Db.Get().AccessorySlots.HeadShape, HeadShape);
-            int mouth = Mouth == null ? headShape : chooseAccessoryNumber(Db.Get().AccessorySlots.Mouth, Mouth);
-            int eyes = chooseAccessoryNumber(Db.Get().AccessorySlots.Eyes, Eyes);
+            int headShape = ChooseAccessoryNumber(Db.Get().AccessorySlots.HeadShape, HeadShape);
+            int mouth = Mouth == null ? headShape : ChooseAccessoryNumber(Db.Get().AccessorySlots.Mouth, Mouth);
+            int eyes = ChooseAccessoryNumber(Db.Get().AccessorySlots.Eyes, Eyes);
 
             // Customisable accessories
-            int hair = chooseAccessoryNumber(Db.Get().AccessorySlots.Hair, Hair);
-            int body = chooseAccessoryNumber(Db.Get().AccessorySlots.Body, Body);
+            int hair = ChooseAccessoryNumber(Db.Get().AccessorySlots.Hair, Hair);
+            int body = ChooseAccessoryNumber(Db.Get().AccessorySlots.Body, Body);
 
             Personality personality = new Personality(
                 nameStringKey.ToUpper(),
@@ -114,14 +114,14 @@ namespace Dupery
             return personality;
         }
 
-        public static PersonalityOutline fromStockPersonality(Personality personality)
+        public static PersonalityOutline FromStockPersonality(Personality personality)
         {
             string name = string.Format("STRINGS.DUPLICANTS.PERSONALITIES.{0}.NAME", personality.nameStringKey.ToUpper());
             string description = string.Format("STRINGS.DUPLICANTS.PERSONALITIES.{0}.DESC", personality.nameStringKey.ToUpper());
 
             PersonalityOutline jsonPersonality = new PersonalityOutline
             {
-                Enabled = true,
+                Printable = true,
                 Name = name,
                 Description = description,
                 Gender = personality.genderStringKey,
@@ -139,13 +139,13 @@ namespace Dupery
             return jsonPersonality;
         }
 
-        private static int chooseAccessoryNumber(AccessorySlot slot, string value)
+        private static int ChooseAccessoryNumber(AccessorySlot slot, string value)
         {
             int accessoryNumber;
 
             if (value == null)
             {
-                accessoryNumber = PersonalityGenerator.rollAccessory(slot);
+                accessoryNumber = PersonalityGenerator.RollAccessory(slot);
             }
             else
             {

@@ -10,60 +10,116 @@ namespace Dupery
 {
     class PersonalityManager
     {
-        public const string IMPORTED_PERSONALITIES_FILE_NAME = "dupery.PERSONALITIES.json";
-        public const string OVERRIDE_PERSONALITIES_FILE_NAME = "OVERRIDE.{0}.json";
+        public const string PERSONALITIES_FILE_NAME = "PERSONALITIES.json";
+        public const string OVERRIDE_FILE_NAME = "OVERRIDE.json";
+        public const string OVERRIDE_IMPORT_FILE_NAME = "OVERRIDE.{0}.json";
 
-        private const string PERSONALITIES_FILE_NAME = "PERSONALITIES.json";
-        private const int MINIMUM_PERSONALITY_COUNT = 4;
+        public const int MINIMUM_PERSONALITY_COUNT = 4;
 
-        private readonly string personalitiesFilePath;
-
-        private Dictionary<string, PersonalityOutline> storedPersonalities;
+        private Dictionary<string, PersonalityOutline> stockPersonalities;
+        private Dictionary<string, PersonalityOutline> customPersonalities;
         private Dictionary<string, Dictionary<string, PersonalityOutline>> importedPersonalities;
-        private bool newFileNeeded = false;
 
         public PersonalityManager()
         {
-            this.personalitiesFilePath = Path.Combine(DuperyPatches.DirectoryName, PERSONALITIES_FILE_NAME);
+            // Load stock personalities
+            stockPersonalities = new Dictionary<string, PersonalityOutline>();
 
-            this.storedPersonalities = new Dictionary<string, PersonalityOutline>();
+            int personalitiesCount = Db.Get().Personalities.Count;
+            for (int i = 0; i < personalitiesCount; i++)
+            {
+                Personality dbPersonality = Db.Get().Personalities[i];
+                stockPersonalities[dbPersonality.nameStringKey] = PersonalityOutline.FromStockPersonality(dbPersonality);
+            }
+
+            string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, OVERRIDE_FILE_NAME);
+            OverridePersonalities(overrideFilePath, ref stockPersonalities);
+
+            Debug.Log($"Loaded the {stockPersonalities.Count} stock personalities.");
+
+            // Load user created personalities
+            string customPersonalitiesFilePath = Path.Combine(DuperyPatches.DirectoryName, PERSONALITIES_FILE_NAME);
+            if (File.Exists(customPersonalitiesFilePath))
+            {
+                Debug.Log($"Reading custom personalities from {PERSONALITIES_FILE_NAME}...");
+                customPersonalities = ReadPersonalities(customPersonalitiesFilePath);
+                Debug.Log($"Loaded {customPersonalities.Count} user created personalities.");
+            }
+            else
+            {
+                Debug.Log($"{PERSONALITIES_FILE_NAME} not found, a fresh one will be generated.");
+                customPersonalities = new Dictionary<string, PersonalityOutline>();
+                customPersonalities["UNIQUEKEY"] = PersonalityGenerator.ExamplePersonality();
+                WritePersonalities(customPersonalitiesFilePath, customPersonalities);
+            }
+
+            // Prepare for imported personalities
             this.importedPersonalities = new Dictionary<string, Dictionary<string, PersonalityOutline>>();
-
-            TryFetchPersonalities();
         }
 
         public List<Personality> GetPersonalities()
         {
-            // Fetch stored personalities now if it hasn't already happened
-            if (this.newFileNeeded)
-            {
-                InitializeDefaultPersonalityFile();
-                FetchPersonalities();
-
-                this.newFileNeeded = false;
-            }
-
             List<Personality> personalities = new List<Personality>();
 
-            foreach (string key in storedPersonalities.Keys)
-                if (storedPersonalities[key].Enabled)
-                    personalities.Add(storedPersonalities[key].toPersonality(key));
+            personalities.AddRange(FlattenPersonalities(stockPersonalities));
+            personalities.AddRange(FlattenPersonalities(customPersonalities));
 
-            foreach (Dictionary<string, PersonalityOutline> personalityMap in importedPersonalities.Values)
-                foreach (string key in personalityMap.Keys)
-                    if (personalityMap[key].Enabled)
-                        personalities.Add(personalityMap[key].toPersonality(key));
-
-            while (personalities.Count < MINIMUM_PERSONALITY_COUNT)
+            foreach (string key in importedPersonalities.Keys)
             {
-                string name = string.Format("ULTRADUPE-{0}{1:00000}", personalities.Count + 1, UnityEngine.Random.Range(0, 100000));
-                Personality substitutePersonality = PersonalityGenerator.randomPersonality(name, "STRINGS.BAD_DUPLICANT_DESCRIPTION");
-
-                Debug.Log($"Not enough personalities, adding {name} to personality pool.");
-                personalities.Add(substitutePersonality);
+                Dictionary<string, PersonalityOutline> personalityMap = importedPersonalities[key];
+                personalities.AddRange(FlattenPersonalities(personalityMap));
             }
 
             return personalities;
+        }
+
+        public int CountPersonalities()
+        {
+            int count = stockPersonalities.Count + customPersonalities.Count;
+            foreach (Dictionary<string, PersonalityOutline> value in importedPersonalities.Values)
+                count += value.Count;
+
+            return count;
+        }
+
+        public void TryImportPersonalities(string importFilePath, string modId)
+        {
+            Dictionary<string, PersonalityOutline> modPersonalities = ReadPersonalities(importFilePath);
+
+            string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, string.Format(OVERRIDE_IMPORT_FILE_NAME, modId));
+            OverridePersonalities(overrideFilePath, ref modPersonalities);
+
+            importedPersonalities[modId] = modPersonalities;
+            Debug.Log($"{importedPersonalities.Count} personalities loaded successfully.");
+        }
+
+        public void OverridePersonalities(string overrideFilePath, ref Dictionary<string, PersonalityOutline> personalities)
+        {
+            Dictionary<string, PersonalityOutline> currentOverrides = null;
+            if (File.Exists(overrideFilePath))
+            {
+                currentOverrides = ReadPersonalities(overrideFilePath);
+            }
+
+            Dictionary<string, PersonalityOutline> newOverrides = new Dictionary<string, PersonalityOutline>();
+            foreach (string key in personalities.Keys)
+            {
+                PersonalityOutline overridingPersonality = null;
+                if (currentOverrides != null)
+                    currentOverrides.TryGetValue(key, out overridingPersonality);
+
+                if (overridingPersonality != null)
+                {
+                    personalities[key].OverrideValues(overridingPersonality);
+                    newOverrides[key] = overridingPersonality;
+                }
+                else
+                {
+                    newOverrides[key] = new PersonalityOutline { Printable = personalities[key].Printable };
+                }
+            }
+
+            WritePersonalities(overrideFilePath, newOverrides);
         }
 
         public static Dictionary<string, PersonalityOutline> ReadPersonalities(string personalitiesFilePath)
@@ -84,74 +140,15 @@ namespace Dupery
             }
         }
 
-        private void TryFetchPersonalities()
+        private List<Personality> FlattenPersonalities(Dictionary<string, PersonalityOutline> personalities)
         {
-            if (!File.Exists(this.personalitiesFilePath))
-            {
-                Debug.Log($"{PERSONALITIES_FILE_NAME} not found, a fresh one will be generated.");
-                this.newFileNeeded = true;
-                return;
-            }
-            else
-            {
-                FetchPersonalities();
-            }
-        }
+            List<Personality> flattenedPersonalities = new List<Personality>();
 
-        private void FetchPersonalities()
-        {
-            Debug.Log($"Reading personalities from {PERSONALITIES_FILE_NAME}...");
-            storedPersonalities = ReadPersonalities(this.personalitiesFilePath);
-            Debug.Log($"Personalities fetched.");
-        }
+            foreach (string key in personalities.Keys)
+                if (personalities[key].Printable)
+                    flattenedPersonalities.Add(personalities[key].ToPersonality(key));
 
-        private void InitializeDefaultPersonalityFile()
-        {
-            Dictionary<string, PersonalityOutline> dbPersonalities = new Dictionary<string, PersonalityOutline>();
-
-            int personalitiesCount = Db.Get().Personalities.Count;
-            for (int i = 0; i < personalitiesCount; i++)
-            {
-                Personality dbPersonality = Db.Get().Personalities[i];
-                dbPersonalities[dbPersonality.nameStringKey] = PersonalityOutline.fromStockPersonality(dbPersonality);
-            }
-
-            Debug.Log($"Writing initial {personalitiesCount} personalities file...");
-            WritePersonalities(this.personalitiesFilePath, dbPersonalities);
-            Debug.Log($"Default personalities file initialized.");
-        }
-
-        public void TryImportPersonalities(string importFilePath, string modId)
-        {
-            this.importedPersonalities[modId] = ReadPersonalities(importFilePath);
-            Debug.Log($"{importedPersonalities[modId].Count} personalities imported successfully.");
-
-            string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, string.Format(OVERRIDE_PERSONALITIES_FILE_NAME, modId));
-            Dictionary<string, PersonalityOutline> currentOverrides = null;
-            if (File.Exists(overrideFilePath))
-            {
-                currentOverrides = ReadPersonalities(overrideFilePath);
-            }
-
-            Dictionary<string, PersonalityOutline> newOverrides = new Dictionary<string, PersonalityOutline>();
-            foreach (string key in importedPersonalities[modId].Keys)
-            {
-                PersonalityOutline overridingPersonality = null;
-                if (currentOverrides != null)
-                    currentOverrides.TryGetValue(key, out overridingPersonality);
-
-                if (overridingPersonality != null)
-                {
-                    importedPersonalities[modId][key].OverrideValues(overridingPersonality);
-                    newOverrides[key] = overridingPersonality;
-                }
-                else
-                {
-                    newOverrides[key] = new PersonalityOutline { Enabled = importedPersonalities[modId][key].Enabled };
-                }
-            }
-
-            WritePersonalities(overrideFilePath, newOverrides);
+            return flattenedPersonalities;
         }
     }
 }

@@ -9,42 +9,59 @@ namespace Dupery
 {
     class PersonalityGenerator
     {
-        public static string rollGender()
+        public static string RollGender()
         {
             string[] genders = new string[3] { "Female", "NB", "Male" };
             int randomIndex = UnityEngine.Random.Range(0, genders.Length);
             return genders[randomIndex];
         }
 
-        public static string rollPersonalityType()
+        public static string RollPersonalityType()
         {
             string[] personalityTypes = new string[4] { "Doofy", "Cool", "Grumpy", "Sweet" };
             int randomIndex = UnityEngine.Random.Range(0, personalityTypes.Length);
             return personalityTypes[randomIndex];
         }
 
-        public static string rollStressTrait()
+        public static string RollStressTrait()
         {
             int randomIndex = UnityEngine.Random.Range(0, DUPLICANTSTATS.STRESSTRAITS.Count);
             return DUPLICANTSTATS.STRESSTRAITS[randomIndex].id;
         }
 
-        public static string rollJoyTrait()
+        public static string RollJoyTrait()
         {
             int randomIndex = UnityEngine.Random.Range(0, DUPLICANTSTATS.JOYTRAITS.Count);
             return DUPLICANTSTATS.JOYTRAITS[randomIndex].id;
         }
 
-        public static string rollStickerType()
+        public static string RollStickerType()
         {
             string[] stickerTypes = new string[3] { "sticker", "glitter", "glowinthedark" };
             int randomIndex = UnityEngine.Random.Range(0, stickerTypes.Length);
             return stickerTypes[randomIndex];
         }
 
-        public static int rollAccessory(AccessorySlot accessorySlot)
+        public static int RollAccessory(AccessorySlot accessorySlot)
         {
             return UnityEngine.Random.Range(0, accessorySlot.accessories.Count) + 1;
+        }
+
+        public static PersonalityOutline ExamplePersonality()
+        {
+            return new PersonalityOutline()
+            {
+                Printable = false,
+                Name = STRINGS.EXAMPLE_DUPLICANT_NAME,
+                Description = STRINGS.EXAMPLE_DUPLICANT_DESCRIPTION,
+                Gender = "NB",
+                StressTrait = "BingeEater",
+                JoyTrait = "SuperProductive",
+                HeadShape = "1",
+                Eyes = "1",
+                Hair = "1",
+                Body = "1",
+            };
         }
 
         public static Personality randomPersonality(string name, string description)
@@ -54,7 +71,7 @@ namespace Dupery
                 Name = name,
                 Description = description
             };
-            return outline.toPersonality(name.ToUpper());
+            return outline.ToPersonality(name.ToUpper());
         }
     }
 }

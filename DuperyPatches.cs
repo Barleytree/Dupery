@@ -66,10 +66,10 @@ namespace Dupery
                     Debug.Log($"{totalImported} accessories imported successfully.");
                 }
 
-                string personalitiesFilePath = Path.Combine(mod.content_source.GetRoot(), PersonalityManager.IMPORTED_PERSONALITIES_FILE_NAME);
+                string personalitiesFilePath = Path.Combine(mod.content_source.GetRoot(), PersonalityManager.PERSONALITIES_FILE_NAME);
                 if (File.Exists(personalitiesFilePath))
                 {
-                    Debug.Log($"Found {PersonalityManager.IMPORTED_PERSONALITIES_FILE_NAME} file belonging to mod <{mod.title}>, attempting to import personalities...");
+                    Debug.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod <{mod.title}>, attempting to import personalities...");
                     PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod.staticID);
                 }
             }

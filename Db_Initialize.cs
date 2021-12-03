@@ -17,8 +17,20 @@ namespace Dupery
             // Import resources from other mods (which should now be loaded), if they are activated
             DuperyPatches.LoadResources();
 
+            Debug.Log($"Preparing personality pool...");
+            int totalPersonalityCount = DuperyPatches.PersonalityManager.CountPersonalities();
             List<Personality> personalities = DuperyPatches.PersonalityManager.GetPersonalities();
-            Debug.Log($"Found {personalities.Count} personalities in total.");
+            Debug.Log($"Printing has been disabled for {totalPersonalityCount - personalities.Count} personalities");
+            Debug.Log($"Using {personalities.Count}/{totalPersonalityCount} personalities");
+
+            while (personalities.Count < PersonalityManager.MINIMUM_PERSONALITY_COUNT)
+            {
+                string name = string.Format("SUBSTIDUPE-{0}{1:00000}", personalities.Count + 1, UnityEngine.Random.Range(0, 100000));
+                Personality substitutePersonality = PersonalityGenerator.randomPersonality(name, "STRINGS.BAD_DUPLICANT_DESCRIPTION");
+
+                Debug.Log($"Not enough personalities, adding {name} to pool.");
+                personalities.Add(substitutePersonality);
+            }
 
             // Remove all personalities
             Db.Get().Personalities = new Personalities();
@@ -32,7 +44,6 @@ namespace Dupery
             foreach (Personality personality in personalities)
             {
                 Db.Get().Personalities.Add(personality);
-                Debug.Log($"Loaded {personality.Name}");
             }
         }
     }
