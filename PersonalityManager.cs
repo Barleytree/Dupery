@@ -49,7 +49,7 @@ namespace Dupery
             {
                 Debug.Log($"{PERSONALITIES_FILE_NAME} not found, a fresh one will be generated.");
                 customPersonalities = new Dictionary<string, PersonalityOutline>();
-                customPersonalities["UNIQUEKEY"] = PersonalityGenerator.ExamplePersonality();
+                customPersonalities["EXAMPLENAME"] = PersonalityGenerator.ExamplePersonality();
                 WritePersonalities(customPersonalitiesFilePath, customPersonalities);
             }
 
@@ -88,6 +88,9 @@ namespace Dupery
 
             string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, string.Format(OVERRIDE_IMPORT_FILE_NAME, modId));
             OverridePersonalities(overrideFilePath, ref modPersonalities);
+
+            foreach (string key in modPersonalities.Keys)
+                modPersonalities[key].SetSourceModId(modId);
 
             importedPersonalities[modId] = modPersonalities;
             Debug.Log($"{importedPersonalities.Count} personalities loaded successfully.");

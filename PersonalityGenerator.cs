@@ -49,11 +49,16 @@ namespace Dupery
 
         public static PersonalityOutline ExamplePersonality()
         {
+            if (!DuperyPatches.Localizer.TryGet("STRINGS.EXAMPLE_DUPLICANT_NAME", out string name))
+                name = STRINGS.EXAMPLE_DUPLICANT_NAME;
+            if (!DuperyPatches.Localizer.TryGet("STRINGS.EXAMPLE_DUPLICANT_DESCRIPTION", out string description))
+                description = STRINGS.EXAMPLE_DUPLICANT_DESCRIPTION;
+
             return new PersonalityOutline()
             {
                 Printable = false,
-                Name = STRINGS.EXAMPLE_DUPLICANT_NAME,
-                Description = STRINGS.EXAMPLE_DUPLICANT_DESCRIPTION,
+                Name = name,
+                Description = description,
                 Gender = "NB",
                 StressTrait = "BingeEater",
                 JoyTrait = "SuperProductive",

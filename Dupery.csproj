@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="AccessoryManager.cs" />
     <Compile Include="AccessoryPool.cs" />
+    <Compile Include="CheekyLocalizer.cs" />
     <Compile Include="Db_Initialize.cs" />
     <Compile Include="Localization_Initialize.cs" />
     <Compile Include="MinionStartingStats_Constructor.cs" />

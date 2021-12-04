@@ -37,6 +37,9 @@ namespace Dupery
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Body { get; set; }
 
+        // Extra not-serlialized properties
+        private string sourceModId;
+
         public PersonalityOutline() { }
 
         public void OverrideValues(PersonalityOutline overridingPersonality)
@@ -60,14 +63,27 @@ namespace Dupery
 
         public Personality ToPersonality(string nameStringKey)
         {
+            nameStringKey = nameStringKey.ToUpper();
+
             // Meaningless attributes
             string congenitalTrait = "None";
             int neck = -1;
 
-            // Fill missing values
-            string name = Name != null ? Name : "The Nameless One";
-            string description = Description != null ? Description : "{0} defies description.";
+            // Name can't be null
+            string name = Name;
+            if (name == null)
+                if (!DuperyPatches.Localizer.TryGet("STRINGS.MISSING_DUPLICANT_NAME", out name))
+                    name = STRINGS.MISSING_DUPLICANT_NAME;
+
+            // Description can't be null
+            string description = Description;
+            if (description == null)
+                if (!DuperyPatches.Localizer.TryGet("STRINGS.MISSING_DUPLICANT_DESCRIPTION", out description))
+                    description = STRINGS.MISSING_DUPLICANT_DESCRIPTION;
+
+            // Fill in other missing values using randomness
             string gender = Gender != null ? Gender : PersonalityGenerator.RollGender();
+            gender = gender.ToUpper();
             string personalityType = PersonalityType != null ? PersonalityType : PersonalityGenerator.RollPersonalityType();
             string stressTrait = StressTrait != null ? StressTrait : PersonalityGenerator.RollStressTrait();
             string joyTrait = JoyTrait != null ? JoyTrait : PersonalityGenerator.RollJoyTrait();
@@ -81,8 +97,21 @@ namespace Dupery
 
             // Localizable attributes
             StringEntry result;
-            name = Strings.TryGet(new StringKey(name), out result) ? result.ToString() : name;
-            description = Strings.TryGet(new StringKey(description), out result) ? result.ToString() : description;
+            if (name != null)
+                name = Strings.TryGet(new StringKey(name), out result) ? result.ToString() : name;
+            if (description != null)
+                description = Strings.TryGet(new StringKey(description), out result) ? result.ToString() : description;
+
+            string localizedName = null;
+            string localizedDescription = null;
+            if (sourceModId != null)
+            {
+                DuperyPatches.ModLocalizers[sourceModId].TryGet($"{nameStringKey}.NAME", out localizedName);
+                DuperyPatches.ModLocalizers[sourceModId].TryGet($"{nameStringKey}.DESCRIPTION", out localizedDescription);
+            }
+
+            name = localizedName != null ? localizedName : name;
+            description = localizedDescription != null ? localizedDescription : description;
 
             // Uncustomisable accessories
             int headShape = ChooseAccessoryNumber(Db.Get().AccessorySlots.HeadShape, HeadShape);
@@ -94,9 +123,9 @@ namespace Dupery
             int body = ChooseAccessoryNumber(Db.Get().AccessorySlots.Body, Body);
 
             Personality personality = new Personality(
-                nameStringKey.ToUpper(),
+                nameStringKey,
                 name,
-                gender.ToUpper(),
+                gender,
                 personalityType,
                 stressTrait,
                 joyTrait,
@@ -137,6 +166,16 @@ namespace Dupery
             };
 
             return jsonPersonality;
+        }
+
+        public void SetSourceModId(string sourceModId)
+        {
+            this.sourceModId = sourceModId;
+        }
+
+        public string GetSourceModId()
+        {
+            return this.sourceModId;
         }
 
         private static int ChooseAccessoryNumber(AccessorySlot slot, string value)

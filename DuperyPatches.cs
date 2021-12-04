@@ -12,6 +12,9 @@ namespace Dupery
         public static string ModStaticID;
         public static IReadOnlyList<Mod> Mods;
 
+        public static CheekyLocalizer Localizer;
+        public static Dictionary<string, CheekyLocalizer> ModLocalizers;
+
         public static AccessoryManager AccessoryManager;
         public static PersonalityManager PersonalityManager;
 
@@ -35,6 +38,9 @@ namespace Dupery
 
         public static void LoadResources()
         {
+            Localizer = new CheekyLocalizer(DirectoryName);
+            ModLocalizers = new Dictionary<string, CheekyLocalizer>();
+
             AccessoryManager = new AccessoryManager();
             PersonalityManager = new PersonalityManager();
 
@@ -50,6 +56,8 @@ namespace Dupery
 
                 if (mod.content_source == null)
                     continue;
+
+                ModLocalizers[mod.staticID] = new CheekyLocalizer(mod.content_source.GetRoot());
 
                 List<string> animNames = GetAnimNames(mod);
                 if (animNames != null && animNames.Count > 0)

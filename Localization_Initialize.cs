@@ -18,6 +18,7 @@ namespace Dupery
         {
             RegisterForTranslation(root);
             LocString.CreateLocStringKeys(root, null);
+            GenerateStringsTemplate(root, Path.Combine(DuperyPatches.DirectoryName, "strings_templates"));
         }
     }
 }

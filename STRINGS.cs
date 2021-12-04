@@ -8,8 +8,12 @@ namespace Dupery
 {
     public class STRINGS
     {
-        public static LocString EXAMPLE_DUPLICANT_NAME = "The Nameless One";
+        public static LocString EXAMPLE_DUPLICANT_NAME = "Example Name";
         public static LocString EXAMPLE_DUPLICANT_DESCRIPTION = "{0} is an example to us all.";
+
+        public static LocString MISSING_DUPLICANT_NAME = "The Nameless One";
+        public static LocString MISSING_DUPLICANT_DESCRIPTION = "{0} defies description.";
+
         public static LocString BAD_DUPLICANT_DESCRIPTION = "{0} appeared because there was nobody else to print!";
     }
 }
