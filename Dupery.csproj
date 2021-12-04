@@ -68,6 +68,7 @@
     <Compile Include="CheekyLocalizer.cs" />
     <Compile Include="Db_Initialize.cs" />
     <Compile Include="Localization_Initialize.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MinionStartingStats_Constructor.cs" />
     <Compile Include="MinionStartingStats_CreateBodyData.cs" />
     <Compile Include="PersonalityGenerator.cs" />

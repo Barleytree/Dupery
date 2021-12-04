@@ -35,19 +35,19 @@ namespace Dupery
             string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, OVERRIDE_FILE_NAME);
             OverridePersonalities(overrideFilePath, ref stockPersonalities);
 
-            Debug.Log($"Loaded the {stockPersonalities.Count} stock personalities.");
+            Logger.Log($"Loaded the {stockPersonalities.Count} stock personalities.");
 
             // Load user created personalities
             string customPersonalitiesFilePath = Path.Combine(DuperyPatches.DirectoryName, PERSONALITIES_FILE_NAME);
             if (File.Exists(customPersonalitiesFilePath))
             {
-                Debug.Log($"Reading custom personalities from {PERSONALITIES_FILE_NAME}...");
+                Logger.Log($"Reading custom personalities from {PERSONALITIES_FILE_NAME}...");
                 customPersonalities = ReadPersonalities(customPersonalitiesFilePath);
-                Debug.Log($"Loaded {customPersonalities.Count} user created personalities.");
+                Logger.Log($"Loaded {customPersonalities.Count} user created personalities.");
             }
             else
             {
-                Debug.Log($"{PERSONALITIES_FILE_NAME} not found, a fresh one will be generated.");
+                Logger.Log($"{PERSONALITIES_FILE_NAME} not found, a fresh one will be generated.");
                 customPersonalities = new Dictionary<string, PersonalityOutline>();
                 customPersonalities["EXAMPLENAME"] = PersonalityGenerator.ExamplePersonality();
                 WritePersonalities(customPersonalitiesFilePath, customPersonalities);
@@ -93,7 +93,7 @@ namespace Dupery
                 modPersonalities[key].SetSourceModId(modId);
 
             importedPersonalities[modId] = modPersonalities;
-            Debug.Log($"{importedPersonalities.Count} personalities loaded successfully.");
+            Logger.Log($"{importedPersonalities.Count} personalities imported from <{modId}>.");
         }
 
         public void OverridePersonalities(string overrideFilePath, ref Dictionary<string, PersonalityOutline> personalities)

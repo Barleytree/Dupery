@@ -23,7 +23,7 @@ namespace Dupery
             betterInstructions.Add(new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Db), "Personalities")));
             betterInstructions.Add(new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(ResourceSet), "get_Count")));
 
-            Debug.Log($"Attempting to force personality randomiser to pick from all available personalities...");
+            Logger.Log($"Attempting to force personality randomiser to pick from all available personalities...");
             int successes = 0;
             for (int i = 0; i < code.Count - 1; i++)
             {
@@ -31,7 +31,7 @@ namespace Dupery
                 {
                     if (code[i].operand.ToString() == "29")
                     {
-                        Debug.Log("Removing starting dupe restriction: all personalities will be available when creating a new colony.");
+                        Logger.Log("Removing starting dupe restriction: all personalities will be available when creating a new colony.");
                     }
 
                     code.RemoveAt(i);
@@ -41,14 +41,14 @@ namespace Dupery
 
                 if (successes == 2)
                 {
-                    Debug.Log($"Successfully transpiled the personality randomiser!");
+                    Logger.Log($"Successfully transpiled the personality randomiser!");
                     break;
                 }
             }
 
             if (successes != 2)
             {
-                Debug.Log($"Failed to correctly transpile the personality randomiser, some personalities may be unavailable!");
+                Logger.Log($"Failed to correctly transpile the personality randomiser, some personalities may be unavailable!");
             }
 
             return code;

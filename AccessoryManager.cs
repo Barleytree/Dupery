@@ -97,7 +97,7 @@ namespace Dupery
             }
 
             if (numCached > 0)
-                Debug.Log($"Added {numCached} new accessories IDs to the cache.");
+                Logger.Log($"Added {numCached} new accessories IDs to the cache.");
 
             return numLoaded;
         }

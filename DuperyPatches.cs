@@ -44,7 +44,7 @@ namespace Dupery
             AccessoryManager = new AccessoryManager();
             PersonalityManager = new PersonalityManager();
 
-            Debug.Log("Searching for personalities and accessories provided by other mods.");
+            Logger.Log("Searching for personalities and accessories provided by other mods.");
 
             foreach (Mod mod in Mods)
             {
@@ -62,27 +62,25 @@ namespace Dupery
                 List<string> animNames = GetAnimNames(mod);
                 if (animNames != null && animNames.Count > 0)
                 {
-                    Debug.Log($"Found anims belonging to mod <{mod.title}>, searching for accessories.");
+                    Logger.Log($"Found anims belonging to mod <{mod.title}>, searching for accessories.");
 
                     int totalImported = 0;
                     foreach (string animName in animNames)
                     {
-                        Debug.Log($"Checking {animName}...");
+                        Logger.Log($"Checking {animName}...");
                         totalImported += AccessoryManager.LoadAccessories(animName, true);
                     }
 
-                    Debug.Log($"{totalImported} accessories imported successfully.");
+                    Logger.Log($"{totalImported} accessories imported successfully.");
                 }
 
                 string personalitiesFilePath = Path.Combine(mod.content_source.GetRoot(), PersonalityManager.PERSONALITIES_FILE_NAME);
                 if (File.Exists(personalitiesFilePath))
                 {
-                    Debug.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod <{mod.title}>, attempting to import personalities...");
+                    Logger.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod <{mod.title}>, attempting to import personalities...");
                     PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod.staticID);
                 }
             }
-
-            Debug.Log("Work complete.");
         }
 
         private static List<string> GetAnimNames(Mod mod)
