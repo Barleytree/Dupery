@@ -33,22 +33,38 @@ namespace Dupery
             }
 
             string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, OVERRIDE_FILE_NAME);
-            OverridePersonalities(overrideFilePath, ref stockPersonalities);
+            try
+            {
+                OverridePersonalities(overrideFilePath, ref stockPersonalities);
+            }
+            catch (PersonalityLoadException)
+            {
+                Logger.LogError($"Failed to load {OVERRIDE_FILE_NAME}. Please fix any JSON syntax errors or delete the file.");
+            }
 
             Logger.Log($"Loaded the {stockPersonalities.Count} stock personalities.");
 
             // Load user created personalities
             string customPersonalitiesFilePath = Path.Combine(DuperyPatches.DirectoryName, PERSONALITIES_FILE_NAME);
+            customPersonalities = new Dictionary<string, PersonalityOutline>();
             if (File.Exists(customPersonalitiesFilePath))
             {
-                Logger.Log($"Reading custom personalities from {PERSONALITIES_FILE_NAME}...");
-                customPersonalities = ReadPersonalities(customPersonalitiesFilePath);
-                Logger.Log($"Loaded {customPersonalities.Count} user created personalities.");
+                try
+                {
+                    Logger.Log($"Reading custom personalities from {PERSONALITIES_FILE_NAME}...");
+                    customPersonalities = ReadPersonalities(customPersonalitiesFilePath);
+                }
+                catch (PersonalityLoadException)
+                {
+                    Logger.LogError($"Failed to load {PERSONALITIES_FILE_NAME}. Please fix any JSON syntax errors or delete the file.");
+                }
+
+                if (customPersonalities != null)
+                    Logger.Log($"Loaded {customPersonalities.Count} user created personalities.");
             }
             else
             {
                 Logger.Log($"{PERSONALITIES_FILE_NAME} not found, a fresh one will be generated.");
-                customPersonalities = new Dictionary<string, PersonalityOutline>();
                 customPersonalities["EXAMPLENAME"] = PersonalityGenerator.ExamplePersonality();
                 WritePersonalities(customPersonalitiesFilePath, customPersonalities);
             }
@@ -82,28 +98,45 @@ namespace Dupery
             return count;
         }
 
-        public void TryImportPersonalities(string importFilePath, string modId)
+        public bool TryImportPersonalities(string importFilePath, string modId)
         {
-            Dictionary<string, PersonalityOutline> modPersonalities = ReadPersonalities(importFilePath);
+            Dictionary<string, PersonalityOutline> modPersonalities = null;
+            try
+            {
+                modPersonalities = ReadPersonalities(importFilePath);
+            }
+            catch (PersonalityLoadException)
+            {
+                Logger.LogError($"Failed to load {PERSONALITIES_FILE_NAME} file from mod <{modId}>. Please fix any JSON syntax errors or delete the file.");
+                return false;
+            }
 
             string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, string.Format(OVERRIDE_IMPORT_FILE_NAME, modId));
-            OverridePersonalities(overrideFilePath, ref modPersonalities);
+            if (File.Exists(overrideFilePath))
+            {
+                try
+                {
+                    OverridePersonalities(overrideFilePath, ref modPersonalities);
+                }
+                catch (PersonalityLoadException)
+                {
+                    Logger.LogError($"Failed to load {string.Format(OVERRIDE_IMPORT_FILE_NAME, modId)}. Please fix any JSON syntax errors or delete the file.");
+                }
+            }
 
             foreach (string key in modPersonalities.Keys)
                 modPersonalities[key].SetSourceModId(modId);
 
             importedPersonalities[modId] = modPersonalities;
             Logger.Log($"{importedPersonalities.Count} personalities imported from <{modId}>.");
+
+            return true;
         }
 
         public void OverridePersonalities(string overrideFilePath, ref Dictionary<string, PersonalityOutline> personalities)
         {
-            Dictionary<string, PersonalityOutline> currentOverrides = null;
-            if (File.Exists(overrideFilePath))
-            {
-                currentOverrides = ReadPersonalities(overrideFilePath);
-            }
-
+            Dictionary<string, PersonalityOutline> currentOverrides = ReadPersonalities(overrideFilePath);
+            
             Dictionary<string, PersonalityOutline> newOverrides = new Dictionary<string, PersonalityOutline>();
             foreach (string key in personalities.Keys)
             {
@@ -128,8 +161,16 @@ namespace Dupery
         public static Dictionary<string, PersonalityOutline> ReadPersonalities(string personalitiesFilePath)
         {
             Dictionary<string, PersonalityOutline> jsonPersonalities;
-            using (StreamReader streamReader = new StreamReader(personalitiesFilePath))
-                jsonPersonalities = JsonConvert.DeserializeObject<Dictionary<string, PersonalityOutline>>(streamReader.ReadToEnd());
+
+            try
+            {
+                using (StreamReader streamReader = new StreamReader(personalitiesFilePath))
+                    jsonPersonalities = JsonConvert.DeserializeObject<Dictionary<string, PersonalityOutline>>(streamReader.ReadToEnd());
+            }
+            catch (Exception)
+            {
+                throw new PersonalityLoadException();
+            }
 
             return jsonPersonalities;
         }

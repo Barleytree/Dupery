@@ -12,5 +12,10 @@ namespace Dupery
         {
             Debug.Log($"[Dupery] {message}");
         }
+
+        public static void LogError(string message)
+        {
+            Debug.LogError($"[Dupery] {message}");
+        }
     }
 }

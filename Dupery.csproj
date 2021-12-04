@@ -72,6 +72,7 @@
     <Compile Include="MinionStartingStats_Constructor.cs" />
     <Compile Include="MinionStartingStats_CreateBodyData.cs" />
     <Compile Include="PersonalityGenerator.cs" />
+    <Compile Include="Exceptions\PersonalityLoadException.cs" />
     <Compile Include="PersonalityManager.cs" />
     <Compile Include="PersonalityOutline.cs" />
     <Compile Include="DuperyPatches.cs" />
