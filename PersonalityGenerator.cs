@@ -69,14 +69,27 @@ namespace Dupery
             };
         }
 
-        public static Personality randomPersonality(string name, string description)
+        public static Personality RandomPersonality()
         {
+            if (!DuperyPatches.Localizer.TryGet("STRINGS.RANDOM_DUPLICANT_DESCRIPTION", out string description))
+                description = STRINGS.RANDOM_DUPLICANT_DESCRIPTION;
+
             PersonalityOutline outline = new PersonalityOutline()
             {
-                Name = name,
-                Description = description
+                Description = description,
+                Gender = RollGender(),
+                StressTrait = RollStressTrait(),
+                JoyTrait = RollJoyTrait(),
+                HeadShape = RollAccessory(Db.Get().AccessorySlots.HeadShape).ToString(),
+                Eyes = RollAccessory(Db.Get().AccessorySlots.Eyes).ToString(),
+                Hair = RollAccessory(Db.Get().AccessorySlots.Hair).ToString(),
+                Body = RollAccessory(Db.Get().AccessorySlots.Body).ToString(),
             };
-            return outline.ToPersonality(name.ToUpper());
+
+            string nameStringKey = string.Format("{1:00000}", UnityEngine.Random.Range(0, 100000).ToString());
+            outline.Name = $"No. {nameStringKey}"; 
+
+            return outline.ToPersonality(nameStringKey);
         }
     }
 }

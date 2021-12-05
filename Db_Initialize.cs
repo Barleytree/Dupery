@@ -25,12 +25,9 @@ namespace Dupery
 
             while (personalities.Count < PersonalityManager.MINIMUM_PERSONALITY_COUNT)
             {
-                string name = string.Format("SUBSTIDUPE-{0}{1:00000}", personalities.Count + 1, UnityEngine.Random.Range(0, 100000));
-                if (!DuperyPatches.Localizer.TryGet("STRINGS.BAD_DUPLICANT_DESCRIPTION", out string description))
-                    description = STRINGS.BAD_DUPLICANT_DESCRIPTION;
-                Personality substitutePersonality = PersonalityGenerator.randomPersonality(name, description);
+                Personality substitutePersonality = PersonalityGenerator.RandomPersonality();
 
-                Logger.Log($"Not enough personalities, adding {name} to pool.");
+                Logger.Log($"Not enough personalities, adding {substitutePersonality.Name} to pool.");
                 personalities.Add(substitutePersonality);
             }
 
