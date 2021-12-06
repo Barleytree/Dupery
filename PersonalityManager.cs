@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using KMod;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -98,20 +99,20 @@ namespace Dupery
             return count;
         }
 
-        public bool TryImportPersonalities(string importFilePath, string modId)
+        public bool TryImportPersonalities(string importFilePath, Mod mod)
         {
-            Dictionary<string, PersonalityOutline> modPersonalities = null;
+            Dictionary<string, PersonalityOutline> modPersonalities;
             try
             {
                 modPersonalities = ReadPersonalities(importFilePath);
             }
             catch (PersonalityLoadException)
             {
-                Logger.LogError($"Failed to load {PERSONALITIES_FILE_NAME} file from mod <{modId}>. Please fix any JSON syntax errors or delete the file.");
+                Logger.LogError($"Failed to load {PERSONALITIES_FILE_NAME} file from mod <{mod.title}>. Please fix any JSON syntax errors or delete the file.");
                 return false;
             }
 
-            string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, string.Format(OVERRIDE_IMPORT_FILE_NAME, modId));
+            string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, string.Format(OVERRIDE_IMPORT_FILE_NAME, mod.staticID));
             if (File.Exists(overrideFilePath))
             {
                 try
@@ -120,15 +121,15 @@ namespace Dupery
                 }
                 catch (PersonalityLoadException)
                 {
-                    Logger.LogError($"Failed to load {string.Format(OVERRIDE_IMPORT_FILE_NAME, modId)}. Please fix any JSON syntax errors or delete the file.");
+                    Logger.LogError($"Failed to load {string.Format(OVERRIDE_IMPORT_FILE_NAME, mod.staticID)}. Please fix any JSON syntax errors or delete the file.");
                 }
             }
 
             foreach (string key in modPersonalities.Keys)
-                modPersonalities[key].SetSourceModId(modId);
+                modPersonalities[key].SetSourceModId(mod.staticID);
 
-            importedPersonalities[modId] = modPersonalities;
-            Logger.Log($"{importedPersonalities.Count} personalities imported from <{modId}>.");
+            importedPersonalities[mod.staticID] = modPersonalities;
+            Logger.Log($"{importedPersonalities.Count} personalities imported from <{mod.title}>.");
 
             return true;
         }

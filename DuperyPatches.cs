@@ -78,7 +78,7 @@ namespace Dupery
                 if (File.Exists(personalitiesFilePath))
                 {
                     Logger.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod <{mod.title}>, attempting to import personalities...");
-                    PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod.staticID);
+                    PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod);
                 }
             }
         }
