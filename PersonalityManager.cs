@@ -21,6 +21,10 @@ namespace Dupery
         private Dictionary<string, PersonalityOutline> customPersonalities;
         private Dictionary<string, Dictionary<string, PersonalityOutline>> importedPersonalities;
 
+        public Dictionary<string, PersonalityOutline> StockPersonalities { get { return stockPersonalities; } }
+        public Dictionary<string, PersonalityOutline> CustomPersonalities { get { return customPersonalities; } }
+        public Dictionary<string, Dictionary<string, PersonalityOutline>> ImportedPersonalities { get { return importedPersonalities; } }
+
         public PersonalityManager()
         {
             // Load stock personalities
@@ -66,37 +70,11 @@ namespace Dupery
             else
             {
                 Logger.Log($"{PERSONALITIES_FILE_NAME} not found, a fresh one will be generated.");
-                customPersonalities["EXAMPLENAME"] = PersonalityGenerator.ExamplePersonality();
                 WritePersonalities(customPersonalitiesFilePath, customPersonalities);
             }
 
             // Prepare for imported personalities
             this.importedPersonalities = new Dictionary<string, Dictionary<string, PersonalityOutline>>();
-        }
-
-        public List<Personality> GetPersonalities()
-        {
-            List<Personality> personalities = new List<Personality>();
-
-            personalities.AddRange(FlattenPersonalities(stockPersonalities));
-            personalities.AddRange(FlattenPersonalities(customPersonalities));
-
-            foreach (string key in importedPersonalities.Keys)
-            {
-                Dictionary<string, PersonalityOutline> personalityMap = importedPersonalities[key];
-                personalities.AddRange(FlattenPersonalities(personalityMap));
-            }
-
-            return personalities;
-        }
-
-        public int CountPersonalities()
-        {
-            int count = stockPersonalities.Count + customPersonalities.Count;
-            foreach (Dictionary<string, PersonalityOutline> value in importedPersonalities.Values)
-                count += value.Count;
-
-            return count;
         }
 
         public bool TryImportPersonalities(string importFilePath, Mod mod)
@@ -183,17 +161,6 @@ namespace Dupery
                 string json = JsonConvert.SerializeObject(jsonPersonalities, Formatting.Indented);
                 streamWriter.Write(json);
             }
-        }
-
-        private List<Personality> FlattenPersonalities(Dictionary<string, PersonalityOutline> personalities)
-        {
-            List<Personality> flattenedPersonalities = new List<Personality>();
-
-            foreach (string key in personalities.Keys)
-                if (personalities[key].Printable)
-                    flattenedPersonalities.Add(personalities[key].ToPersonality(key));
-
-            return flattenedPersonalities;
         }
     }
 }

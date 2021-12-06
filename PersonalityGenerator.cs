@@ -47,28 +47,6 @@ namespace Dupery
             return UnityEngine.Random.Range(0, accessorySlot.accessories.Count) + 1;
         }
 
-        public static PersonalityOutline ExamplePersonality()
-        {
-            if (!DuperyPatches.Localizer.TryGet("STRINGS.EXAMPLE_DUPLICANT_NAME", out string name))
-                name = STRINGS.EXAMPLE_DUPLICANT_NAME;
-            if (!DuperyPatches.Localizer.TryGet("STRINGS.EXAMPLE_DUPLICANT_DESCRIPTION", out string description))
-                description = STRINGS.EXAMPLE_DUPLICANT_DESCRIPTION;
-
-            return new PersonalityOutline()
-            {
-                Printable = false,
-                Name = name,
-                Description = description,
-                Gender = "NB",
-                StressTrait = "BingeEater",
-                JoyTrait = "SuperProductive",
-                HeadShape = "1",
-                Eyes = "1",
-                Hair = "1",
-                Body = "1",
-            };
-        }
-
         public static Personality RandomPersonality()
         {
             if (!DuperyPatches.Localizer.TryGet("STRINGS.RANDOM_DUPLICANT_DESCRIPTION", out string description))

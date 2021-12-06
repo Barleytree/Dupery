@@ -18,11 +18,52 @@ namespace Dupery
             DuperyPatches.LoadResources();
 
             Logger.Log($"Preparing personality pool...");
-            int totalPersonalityCount = DuperyPatches.PersonalityManager.CountPersonalities();
-            List<Personality> personalities = DuperyPatches.PersonalityManager.GetPersonalities();
-            Logger.Log($"Printing has been disabled for {totalPersonalityCount - personalities.Count} personalities");
-            Logger.Log($"Using {personalities.Count}/{totalPersonalityCount} personalities");
+            var personalityMaps = new List<Dictionary<string, PersonalityOutline>>
+            {
+                DuperyPatches.PersonalityManager.StockPersonalities,
+                DuperyPatches.PersonalityManager.CustomPersonalities
+            };
+            personalityMaps.AddRange(DuperyPatches.PersonalityManager.ImportedPersonalities.Values);
 
+            // Convert the PersonalityOutline objects to Personality objects
+            var personalities = new List<Personality>();
+            var poolNames = new List<string>();
+            var rejectNames = new List<string>();
+            foreach (Dictionary<string, PersonalityOutline> map in personalityMaps)
+            {
+                foreach (string nameStringKey in map.Keys)
+                {
+                    PersonalityOutline outline = map[nameStringKey];
+                    Personality personality = outline.ToPersonality(nameStringKey);
+
+                    string name = $"{personality.Name}";
+                    string sourceModId = outline.GetSourceModId();
+                    if (sourceModId != null)
+                        name = $"{name} [{sourceModId}]";
+
+                    if (outline.Printable)
+                    {
+                        personalities.Add(personality);
+                        poolNames.Add(name);
+                    }
+                    else
+                    {
+                        rejectNames.Add(name);
+                    }
+                }
+            }
+
+            // Just logging stuff
+            string poolNamesReport = string.Join(", ", poolNames);
+            string poolReport = $"Pool contains {poolNames.Count} personalities:\n{poolNamesReport}";
+            if (rejectNames.Count > 0)
+            {
+                string rejectNamesReport = string.Join(", ", rejectNames);
+                poolReport = $"{poolReport}\n{rejectNames.Count} personalities have the property \"Printable = false\" and wont be used:\n{rejectNamesReport}";
+            }
+            Logger.Log(poolReport);
+
+            // Add random personalities if there aren't enough in the pool
             while (personalities.Count < PersonalityManager.MINIMUM_PERSONALITY_COUNT)
             {
                 Personality substitutePersonality = PersonalityGenerator.RandomPersonality();
