@@ -28,7 +28,7 @@ namespace Dupery
             // Convert the PersonalityOutline objects to Personality objects
             var personalities = new List<Personality>();
             var poolNames = new List<string>();
-            var rejectNames = new List<string>();
+            int rejectCount = 0;
             foreach (Dictionary<string, PersonalityOutline> map in personalityMaps)
             {
                 foreach (string nameStringKey in map.Keys)
@@ -50,7 +50,7 @@ namespace Dupery
                     }
                     else
                     {
-                        rejectNames.Add(name);
+                        rejectCount++;
                     }
                 }
             }
@@ -58,11 +58,8 @@ namespace Dupery
             // Just logging stuff
             string poolReport = string.Join("\n", poolNames);
             Logger.Log($"Pool contains {poolNames.Count} personalities:\n{poolReport}");
-            if (rejectNames.Count > 0)
-            {
-                string rejectReport = string.Join("\n", rejectNames);
-                Logger.Log($"{rejectNames.Count} personalities have the property \"Printable = false\" and wont be used:\n{rejectReport}");
-            }
+            if (rejectCount > 0)
+                Logger.Log($"{rejectCount} personalities have the property \"Printable = false\" and wont be used.");
 
             // Add random personalities if there aren't enough in the pool
             while (personalities.Count < PersonalityManager.MINIMUM_PERSONALITY_COUNT)

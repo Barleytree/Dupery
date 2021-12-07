@@ -62,7 +62,7 @@ namespace Dupery
                 List<string> animNames = GetAnimNames(mod);
                 if (animNames != null && animNames.Count > 0)
                 {
-                    Logger.Log($"Found anims belonging to mod <{mod.title}>, searching for accessories.");
+                    Logger.Log($"Found anims belonging to mod {mod.title}, searching for accessories.");
 
                     int totalImported = 0;
                     foreach (string animName in animNames)
@@ -77,7 +77,7 @@ namespace Dupery
                 string personalitiesFilePath = Path.Combine(mod.content_source.GetRoot(), PersonalityManager.PERSONALITIES_FILE_NAME);
                 if (File.Exists(personalitiesFilePath))
                 {
-                    Logger.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod <{mod.title}>, attempting to import personalities...");
+                    Logger.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod {mod.title}, attempting to import personalities...");
                     PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod);
                 }
             }

@@ -11,11 +11,8 @@ namespace Dupery
 {
     class AccessoryPool
     {
-        private const string MISSING_ACCESSORY_ID = "missing";
-
         private Dictionary<string, Dictionary<int, string>> pool;
         private Dictionary<string, int> startingAccessoryNumbers;
-        private Dictionary<string, string> missingAccessoryIds;
 
         private string idCacheFilePath;
 
@@ -42,13 +39,6 @@ namespace Dupery
                 { "Body", Db.Get().AccessorySlots.Body.accessories.Count },
                 { "Arm", Db.Get().AccessorySlots.Body.accessories.Count }
             };
-
-            missingAccessoryIds = new Dictionary<string, string>
-            {
-                { "Hair", $"hair_{MISSING_ACCESSORY_ID}" },
-                { "Body", $"body_{MISSING_ACCESSORY_ID}" },
-                { "Arm", $"arm_{MISSING_ACCESSORY_ID}" }
-            };
         }
 
         public bool IsNativeAccessory(AccessorySlot slot, int accessoryNumber)
@@ -73,11 +63,6 @@ namespace Dupery
         {
             pool[slot.Id].TryGetValue(accessoryNumber, out string id);
             return id;
-        }
-
-        public string GetMissingId(AccessorySlot slot)
-        {
-            return missingAccessoryIds[slot.Id];
         }
 
         public bool ContainsId(AccessorySlot slot, string id)

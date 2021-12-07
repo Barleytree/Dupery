@@ -10,7 +10,6 @@ namespace Dupery
 {
     class AccessoryManager
     {
-        public static string MISSING_ACCESSORIES_ANIM_NAME = "dupery_missing_accessories_kanim";
         private const string ID_CACHE_FILE_NAME = "accessory_id_cache.json";
 
         private AccessoryPool accessoryPool;
@@ -19,8 +18,6 @@ namespace Dupery
         {
             string idCacheFilePath = Path.Combine(DuperyPatches.DirectoryName, ID_CACHE_FILE_NAME);
             accessoryPool = new AccessoryPool(idCacheFilePath);
-
-            LoadAccessories(MISSING_ACCESSORIES_ANIM_NAME);
         }
 
         public int GetAccessoryNumber(AccessorySlot slot, string accessoryId)
@@ -35,13 +32,7 @@ namespace Dupery
                 return null;
             }
 
-            string id = accessoryPool.GetId(slot, accessoryNumber);
-            if (id == null)
-            {
-                id = accessoryPool.GetMissingId(slot);
-            }
-
-            return id;
+            return accessoryPool.GetId(slot, accessoryNumber);
         }
 
         public int LoadAccessories(string animName, bool saveToCache = false)

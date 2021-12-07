@@ -64,7 +64,7 @@ namespace Dupery
                 Body = RollAccessory(Db.Get().AccessorySlots.Body).ToString(),
             };
 
-            string nameStringKey = string.Format("{1:00000}", UnityEngine.Random.Range(0, 100000).ToString());
+            string nameStringKey = string.Format("{0:00000}", UnityEngine.Random.Range(0, 100000));
             outline.Name = $"No. {nameStringKey}"; 
 
             return outline.ToPersonality(nameStringKey);

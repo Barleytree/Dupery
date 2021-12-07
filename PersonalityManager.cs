@@ -86,7 +86,7 @@ namespace Dupery
             }
             catch (PersonalityLoadException)
             {
-                Logger.LogError($"Failed to load {PERSONALITIES_FILE_NAME} file from mod <{mod.title}>. Please fix any JSON syntax errors or delete the file.");
+                Logger.LogError($"Failed to load {PERSONALITIES_FILE_NAME} file from mod {mod.title}. Please fix any JSON syntax errors or delete the file.");
                 return false;
             }
 
@@ -107,7 +107,7 @@ namespace Dupery
                 modPersonalities[key].SetSourceModId(mod.staticID);
 
             importedPersonalities[mod.staticID] = modPersonalities;
-            Logger.Log($"{importedPersonalities.Count} personalities imported from <{mod.title}>.");
+            Logger.Log($"{importedPersonalities.Count} personalities imported from {mod.title}.");
 
             return true;
         }

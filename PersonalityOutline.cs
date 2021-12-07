@@ -47,6 +47,9 @@ namespace Dupery
         {
             PersonalityOutline p = overridingPersonality;
 
+            if (p == this)
+                isModified = true;
+
             Printable = p.Printable;
             if (p.Name != null) Name = p.Name;
             if (p.Description != null) Description = p.Description;
