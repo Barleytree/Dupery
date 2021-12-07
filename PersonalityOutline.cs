@@ -39,6 +39,7 @@ namespace Dupery
 
         // Extra not-serlialized properties
         private string sourceModId;
+        private bool isModified;
 
         public PersonalityOutline() { }
 
@@ -176,6 +177,11 @@ namespace Dupery
         public string GetSourceModId()
         {
             return this.sourceModId;
+        }
+
+        public bool IsModified()
+        {
+            return this.isModified;
         }
 
         private static int ChooseAccessoryNumber(AccessorySlot slot, string value)

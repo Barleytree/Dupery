@@ -38,9 +38,9 @@ namespace Dupery
 
             startingAccessoryNumbers = new Dictionary<string, int>
             {
-                { "Hair", Db.Get().AccessorySlots.Hair.accessories.Count + 1 },
-                { "Body", Db.Get().AccessorySlots.Body.accessories.Count + 1 },
-                { "Arm", Db.Get().AccessorySlots.Body.accessories.Count + 1 }
+                { "Hair", Db.Get().AccessorySlots.Hair.accessories.Count },
+                { "Body", Db.Get().AccessorySlots.Body.accessories.Count },
+                { "Arm", Db.Get().AccessorySlots.Body.accessories.Count }
             };
 
             missingAccessoryIds = new Dictionary<string, string>
@@ -92,7 +92,7 @@ namespace Dupery
                 return false;
             }
 
-            int accessoryNumber = startingAccessoryNumbers[slot.Id];
+            int accessoryNumber = startingAccessoryNumbers[slot.Id] + 1;
             while (true)
             {
                 if (pool[slot.Id].ContainsKey(accessoryNumber))

@@ -38,6 +38,8 @@ namespace Dupery
 
                     string name = $"{personality.Name}";
                     string sourceModId = outline.GetSourceModId();
+                    if (outline.IsModified())
+                        name = $"{name}*";
                     if (sourceModId != null)
                         name = $"{name} [{sourceModId}]";
 
@@ -54,14 +56,13 @@ namespace Dupery
             }
 
             // Just logging stuff
-            string poolNamesReport = string.Join(", ", poolNames);
-            string poolReport = $"Pool contains {poolNames.Count} personalities:\n{poolNamesReport}";
+            string poolReport = string.Join("\n", poolNames);
+            Logger.Log($"Pool contains {poolNames.Count} personalities:\n{poolReport}");
             if (rejectNames.Count > 0)
             {
-                string rejectNamesReport = string.Join(", ", rejectNames);
-                poolReport = $"{poolReport}\n{rejectNames.Count} personalities have the property \"Printable = false\" and wont be used:\n{rejectNamesReport}";
+                string rejectReport = string.Join("\n", rejectNames);
+                Logger.Log($"{rejectNames.Count} personalities have the property \"Printable = false\" and wont be used:\n{rejectReport}");
             }
-            Logger.Log(poolReport);
 
             // Add random personalities if there aren't enough in the pool
             while (personalities.Count < PersonalityManager.MINIMUM_PERSONALITY_COUNT)
