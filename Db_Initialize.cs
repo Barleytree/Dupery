@@ -38,10 +38,10 @@ namespace Dupery
 
                     string name = $"{personality.Name}";
                     string sourceModId = outline.GetSourceModId();
-                    if (outline.IsModified())
-                        name = $"{name}*";
                     if (sourceModId != null)
                         name = $"{name} [{sourceModId}]";
+                    if (outline.IsModified())
+                        name = $"{name} [MODIFIED]";
 
                     if (outline.Printable)
                     {

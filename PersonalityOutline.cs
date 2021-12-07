@@ -47,22 +47,20 @@ namespace Dupery
         {
             PersonalityOutline p = overridingPersonality;
 
-            if (p == this)
-                isModified = true;
-
             Printable = p.Printable;
-            if (p.Name != null) Name = p.Name;
-            if (p.Description != null) Description = p.Description;
-            if (p.Gender != null) Gender = p.Gender;
-            if (p.PersonalityType != null) PersonalityType = p.PersonalityType;
-            if (p.StressTrait != null) StressTrait = p.StressTrait;
-            if (p.JoyTrait != null) JoyTrait = p.JoyTrait;
-            if (p.StickerType != null) StickerType = p.StickerType;
-            if (p.HeadShape != null) HeadShape = p.HeadShape;
-            if (p.Mouth != null) Mouth = p.Mouth;
-            if (p.Eyes != null) Eyes = p.Eyes;
-            if (p.Hair != null) Hair = p.Hair;
-            if (p.Body != null) Body = p.Body;
+            if (p.Name != null && p.Name != Name) { Name = p.Name; isModified = true; }
+            if (p.Description != null && p.Description != Description) { Description = p.Description; isModified = true; }
+            if (p.Gender != null && p.Gender != Gender) { Gender = p.Gender; isModified = true; }
+            if (p.PersonalityType != null && p.PersonalityType != PersonalityType) { PersonalityType = p.PersonalityType; isModified = true; }
+            if (p.StressTrait != null && p.StressTrait != StressTrait) { StressTrait = p.StressTrait; isModified = true; }
+            if (p.JoyTrait != null && p.JoyTrait != JoyTrait) { JoyTrait = p.JoyTrait; isModified = true; }
+            if (p.StickerType != null && p.StickerType != StickerType) { StickerType = p.StickerType; isModified = true; }
+            if (p.HeadShape != null && p.HeadShape != HeadShape) { HeadShape = p.HeadShape; isModified = true; }
+            if (p.Mouth != null && p.Mouth != Mouth) { Mouth = p.Mouth; isModified = true; }
+            if (p.Eyes != null && p.Eyes != Eyes) { Eyes = p.Eyes; isModified = true; }
+            if (p.Hair != null && p.Hair != Hair) { Hair = p.Hair; isModified = true; }
+            if (p.Body != null && p.Body != Body) { Body = p.Body; isModified = true; }
+            // There's probably a cleverer way of doing all of that but whatever
         }
 
         public Personality ToPersonality(string nameStringKey)
