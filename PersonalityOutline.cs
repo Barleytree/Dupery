@@ -9,9 +9,13 @@ namespace Dupery
 {
     class PersonalityOutline
     {
+        // Properties for toggling stuff
         [JsonProperty]
         public bool Printable { get; set; } = true;
+        [JsonProperty]
+        public bool Randomize { get; set; } = false;
 
+        // Personality properties
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -61,6 +65,20 @@ namespace Dupery
             if (p.Hair != null && p.Hair != Hair) { Hair = p.Hair; isModified = true; }
             if (p.Body != null && p.Body != Body) { Body = p.Body; isModified = true; }
             // There's probably a cleverer way of doing all of that but whatever
+
+            if (p.Randomize)
+            {
+                Randomize = true;
+                if (p.PersonalityType == null) PersonalityType = null;
+                if (p.StressTrait == null) StressTrait = null;
+                if (p.JoyTrait == null) JoyTrait = null;
+                if (p.StickerType == null) StickerType = null;
+                if (p.HeadShape == null) HeadShape = null;
+                if (p.Mouth == null) Mouth = null;
+                if (p.Eyes == null) Eyes = null;
+                if (p.Hair == null) Hair = null;
+                if (p.Body == null) Body = null;
+            }
         }
 
         public Personality ToPersonality(string nameStringKey)
@@ -83,18 +101,31 @@ namespace Dupery
                 if (!DuperyPatches.Localizer.TryGet("Dupery.STRINGS.MISSING_DUPLICANT_DESCRIPTION", out description))
                     description = STRINGS.MISSING_DUPLICANT_DESCRIPTION;
 
-            // Fill in other missing values using randomness
-            string gender = Gender != null ? Gender : PersonalityGenerator.RollGender();
+            // Other values can't be null but can be randomized
+
+            string gender = Gender;
+            if (gender == null)
+                gender = Randomize ? PersonalityGenerator.RollGender() : PersonalityGenerator.DEFAULT_GENDER;
             gender = gender.ToUpper();
-            string personalityType = PersonalityType != null ? PersonalityType : PersonalityGenerator.RollPersonalityType();
-            string stressTrait = StressTrait != null ? StressTrait : PersonalityGenerator.RollStressTrait();
-            string joyTrait = JoyTrait != null ? JoyTrait : PersonalityGenerator.RollJoyTrait();
+
+            string personalityType = PersonalityType;
+            if (personalityType == null)
+                personalityType = Randomize ? PersonalityGenerator.RollPersonalityType() : PersonalityGenerator.DEFAULT_PERSONALITY_TYPE;
+
+            string stressTrait = StressTrait;
+            if (stressTrait == null)
+                stressTrait = Randomize ? PersonalityGenerator.RollStressTrait() : PersonalityGenerator.DEFAULT_STRESS_TRAIT;
+
+            string joyTrait = JoyTrait;
+            if (joyTrait == null)
+                joyTrait = Randomize ? PersonalityGenerator.RollJoyTrait() : PersonalityGenerator.DEFAULT_JOY_TRAIT;
+
             string stickerType = "";
             if (joyTrait == "StickerBomber")
             {
                 stickerType = StickerType;
                 if (stickerType == null | stickerType == "")
-                    stickerType = PersonalityGenerator.RollStickerType();
+                    stickerType = Randomize ? PersonalityGenerator.RollStickerType() : PersonalityGenerator.DEFAULT_STICKER_TYPE;
             }
 
             // Localizable attributes
@@ -185,13 +216,13 @@ namespace Dupery
             return this.isModified;
         }
 
-        private static int ChooseAccessoryNumber(AccessorySlot slot, string value)
+        private int ChooseAccessoryNumber(AccessorySlot slot, string value)
         {
             int accessoryNumber;
 
-            if (value == null)
+            if (value == null || value == "")
             {
-                accessoryNumber = PersonalityGenerator.RollAccessory(slot);
+                accessoryNumber = Randomize ? PersonalityGenerator.RollAccessory(slot) : 1;
             }
             else
             {

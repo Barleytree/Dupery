@@ -9,6 +9,12 @@ namespace Dupery
 {
     class PersonalityGenerator
     {
+        public static string DEFAULT_GENDER = "NB";
+        public static string DEFAULT_PERSONALITY_TYPE = "Doofy";
+        public static string DEFAULT_STRESS_TRAIT = "Aggressive";
+        public static string DEFAULT_JOY_TRAIT = "BalloonArtist";
+        public static string DEFAULT_STICKER_TYPE = "sticker";
+
         public static string RollGender()
         {
             string[] genders = new string[3] { "Female", "NB", "Male" };
@@ -49,23 +55,18 @@ namespace Dupery
 
         public static Personality RandomPersonality()
         {
+            string nameStringKey = string.Format("{0:00000}", UnityEngine.Random.Range(0, 100000));
+            string name = $"No. {nameStringKey}";
+
             if (!DuperyPatches.Localizer.TryGet("Dupery.STRINGS.RANDOM_DUPLICANT_DESCRIPTION", out string description))
                 description = STRINGS.RANDOM_DUPLICANT_DESCRIPTION;
 
             PersonalityOutline outline = new PersonalityOutline()
             {
-                Description = description,
-                Gender = RollGender(),
-                StressTrait = RollStressTrait(),
-                JoyTrait = RollJoyTrait(),
-                HeadShape = RollAccessory(Db.Get().AccessorySlots.HeadShape).ToString(),
-                Eyes = RollAccessory(Db.Get().AccessorySlots.Eyes).ToString(),
-                Hair = RollAccessory(Db.Get().AccessorySlots.Hair).ToString(),
-                Body = RollAccessory(Db.Get().AccessorySlots.Body).ToString(),
+                Randomize = true,
+                Name = name,
+                Description = description
             };
-
-            string nameStringKey = string.Format("{0:00000}", UnityEngine.Random.Range(0, 100000));
-            outline.Name = $"No. {nameStringKey}"; 
 
             return outline.ToPersonality(nameStringKey);
         }

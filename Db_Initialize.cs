@@ -42,6 +42,8 @@ namespace Dupery
                         name = $"{name} [{sourceModId}]";
                     if (outline.IsModified())
                         name = $"{name} [MODIFIED]";
+                    if (outline.Randomize)
+                        name = $"{name} [RANDOMIZED]";
 
                     if (outline.Printable)
                     {
