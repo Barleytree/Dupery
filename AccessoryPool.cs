@@ -41,14 +41,14 @@ namespace Dupery
             };
         }
 
-        public bool IsNativeAccessory(AccessorySlot slot, int accessoryNumber)
+        public bool IsNativeAccessory(string slotId, int accessoryNumber)
         {
-            return accessoryNumber > 0 && accessoryNumber <= startingAccessoryNumbers[slot.Id];
+            return accessoryNumber > 0 && accessoryNumber <= startingAccessoryNumbers[slotId];
         }
 
-        public int GetAccessoryNumber(AccessorySlot slot, string id)
+        public int GetAccessoryNumber(string slotId, string id)
         {
-            foreach (KeyValuePair<int, string> entry in pool[slot.Id])
+            foreach (KeyValuePair<int, string> entry in pool[slotId])
             {
                 if (entry.Value == id)
                 {
@@ -59,28 +59,28 @@ namespace Dupery
             return 0;
         }
 
-        public string GetId(AccessorySlot slot, int accessoryNumber)
+        public string GetId(string slotId, int accessoryNumber)
         {
-            pool[slot.Id].TryGetValue(accessoryNumber, out string id);
+            pool[slotId].TryGetValue(accessoryNumber, out string id);
             return id;
         }
 
-        public bool ContainsId(AccessorySlot slot, string id)
+        public bool ContainsId(string slotId, string id)
         {
-            return GetAccessoryNumber(slot, id) > 0;
+            return GetAccessoryNumber(slotId, id) > 0;
         }
 
-        public bool TrySaveId(AccessorySlot slot, string id)
+        public bool TrySaveId(string slotId, string id)
         {
-            if (ContainsId(slot, id))
+            if (ContainsId(slotId, id))
             {
                 return false;
             }
 
-            int accessoryNumber = startingAccessoryNumbers[slot.Id] + 1;
+            int accessoryNumber = startingAccessoryNumbers[slotId] + 1;
             while (true)
             {
-                if (pool[slot.Id].ContainsKey(accessoryNumber))
+                if (pool[slotId].ContainsKey(accessoryNumber))
                 {
                     accessoryNumber++;
                 }
@@ -90,7 +90,7 @@ namespace Dupery
                 }
             }
 
-            pool[slot.Id][accessoryNumber] = id;
+            pool[slotId][accessoryNumber] = id;
             SavePool();
             return true;
         }

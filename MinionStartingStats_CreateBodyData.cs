@@ -30,7 +30,7 @@ namespace Dupery
 
         private static HashedString FindNewId(AccessorySlot slot, int accessoryNumber)
         {
-            string id = DuperyPatches.AccessoryManager.TryGetAccessoryId(slot, accessoryNumber);
+            string id = DuperyPatches.AccessoryManager.TryGetAccessoryId(slot.Id, accessoryNumber);
             if (id != null)
                 return HashCache.Get().Add(id);
             else

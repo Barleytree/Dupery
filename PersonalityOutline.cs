@@ -227,7 +227,7 @@ namespace Dupery
             else
             {
                 int.TryParse(value, out accessoryNumber);
-                accessoryNumber = accessoryNumber > 0 ? accessoryNumber : DuperyPatches.AccessoryManager.GetAccessoryNumber(slot, value);
+                accessoryNumber = accessoryNumber > 0 ? accessoryNumber : DuperyPatches.AccessoryManager.GetAccessoryNumber(slot.Id, value);
             }
 
             return accessoryNumber;

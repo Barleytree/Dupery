@@ -22,7 +22,7 @@ namespace Dupery
 
         private static void AddAccessoryIfMissing(KBatchedAnimController dupe, AccessorySlot slot, int accessoryNumber, HashedString accessoryId)
         {
-            if (!DuperyPatches.AccessoryManager.Pool.IsNativeAccessory(slot, accessoryNumber))
+            if (!DuperyPatches.AccessoryManager.Pool.IsNativeAccessory(slot.Id, accessoryNumber))
             {
                 Accessory accessory = slot.accessories.Find((Predicate<Accessory>)(a => a.IdHash == accessoryId));
                 if (accessory == null)

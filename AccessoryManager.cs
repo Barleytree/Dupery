@@ -22,19 +22,19 @@ namespace Dupery
             accessoryPool = new AccessoryPool(idCacheFilePath);
         }
 
-        public int GetAccessoryNumber(AccessorySlot slot, string accessoryId)
+        public int GetAccessoryNumber(string slotId, string accessoryId)
         {
-            return accessoryPool.GetAccessoryNumber(slot, accessoryId);
+            return accessoryPool.GetAccessoryNumber(slotId, accessoryId);
         }
 
-        public string TryGetAccessoryId(AccessorySlot slot, int accessoryNumber)
+        public string TryGetAccessoryId(string slotId, int accessoryNumber)
         {
-            if (accessoryPool.IsNativeAccessory(slot, accessoryNumber))
+            if (accessoryPool.IsNativeAccessory(slotId, accessoryNumber))
             {
                 return null;
             }
 
-            return accessoryPool.GetId(slot, accessoryNumber);
+            return accessoryPool.GetId(slotId, accessoryNumber);
         }
 
         public int LoadAccessories(string animName, bool saveToCache = false)
@@ -81,7 +81,7 @@ namespace Dupery
 
                 if (cachable && saveToCache)
                 {
-                    bool saved = accessoryPool.TrySaveId(slot, id);
+                    bool saved = accessoryPool.TrySaveId(slot.Id, id);
                     if (saved)
                         numCached++;
                 }
