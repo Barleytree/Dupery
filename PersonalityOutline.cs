@@ -74,13 +74,13 @@ namespace Dupery
             // Name can't be null
             string name = Name;
             if (name == null)
-                if (!DuperyPatches.Localizer.TryGet("STRINGS.MISSING_DUPLICANT_NAME", out name))
+                if (!DuperyPatches.Localizer.TryGet("Dupery.STRINGS.MISSING_DUPLICANT_NAME", out name))
                     name = STRINGS.MISSING_DUPLICANT_NAME;
 
             // Description can't be null
             string description = Description;
             if (description == null)
-                if (!DuperyPatches.Localizer.TryGet("STRINGS.MISSING_DUPLICANT_DESCRIPTION", out description))
+                if (!DuperyPatches.Localizer.TryGet("Dupery.STRINGS.MISSING_DUPLICANT_DESCRIPTION", out description))
                     description = STRINGS.MISSING_DUPLICANT_DESCRIPTION;
 
             // Fill in other missing values using randomness

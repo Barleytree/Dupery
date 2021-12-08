@@ -49,7 +49,7 @@ namespace Dupery
 
         public static Personality RandomPersonality()
         {
-            if (!DuperyPatches.Localizer.TryGet("STRINGS.RANDOM_DUPLICANT_DESCRIPTION", out string description))
+            if (!DuperyPatches.Localizer.TryGet("Dupery.STRINGS.RANDOM_DUPLICANT_DESCRIPTION", out string description))
                 description = STRINGS.RANDOM_DUPLICANT_DESCRIPTION;
 
             PersonalityOutline outline = new PersonalityOutline()
