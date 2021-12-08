@@ -10,6 +10,8 @@ namespace Dupery
 {
     class AccessoryManager
     {
+        public AccessoryPool Pool { get { return this.accessoryPool; } }
+
         private const string ID_CACHE_FILE_NAME = "accessory_id_cache.json";
 
         private AccessoryPool accessoryPool;
