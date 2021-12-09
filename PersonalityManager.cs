@@ -82,6 +82,30 @@ namespace Dupery
             this.importedPersonalities = new Dictionary<string, Dictionary<string, PersonalityOutline>>();
         }
 
+        public void Cleanup()
+        {
+            this.stockPersonalities = null;
+            this.customPersonalities = null;
+            this.importedPersonalities = null;
+        }
+
+        public string FindDescription(string nameStringKey)
+        {
+            string description = null;
+            Personality personality = Db.Get().Personalities.resources.Find(p => p.nameStringKey == nameStringKey);
+            if (personality == null)
+            {
+                if (!DuperyPatches.Localizer.TryGet("Dupery.STRINGS.MISSING_DUPLICANT_DESCRIPTION", out description))
+                    description = STRINGS.MISSING_DUPLICANT_DESCRIPTION;
+            }
+            else
+            {
+                description = personality.description;
+            }
+
+            return description;
+        }
+
         public bool TryImportPersonalities(string importFilePath, Mod mod)
         {
             Dictionary<string, PersonalityOutline> modPersonalities;

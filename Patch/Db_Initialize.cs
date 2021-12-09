@@ -57,6 +57,9 @@ namespace Dupery
                 }
             }
 
+            // Delete unneeded PersonalityOutline objects
+            DuperyPatches.PersonalityManager.Cleanup();
+
             // Just logging stuff
             string poolReport = string.Join("\n", poolNames);
             Logger.Log($"Pool contains {poolNames.Count} personalities:\n{poolReport}");
