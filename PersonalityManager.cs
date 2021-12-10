@@ -12,7 +12,7 @@ namespace Dupery
     class PersonalityManager
     {
         public const string PERSONALITIES_FILE_NAME = "PERSONALITIES.json";
-        public const string OVERRIDE_FILE_NAME = "STOCKOVERRIDE.json";
+        public const string OVERRIDE_FILE_NAME = "OVERRIDE_PERSONALITIES.json";
         public const string OVERRIDE_IMPORT_FILE_NAME = "OVERRIDE.{0}.json";
 
         public const int MINIMUM_PERSONALITY_COUNT = 4;
