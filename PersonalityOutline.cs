@@ -192,7 +192,6 @@ namespace Dupery
                 JoyTrait = personality.joyTrait,
                 StickerType = personality.stickerType,
                 HeadShape = personality.headShape.ToString(),
-                Mouth = personality.mouth.ToString(),
                 Eyes = personality.eyes.ToString(),
                 Hair = personality.hair.ToString(),
                 Body = personality.body.ToString()
