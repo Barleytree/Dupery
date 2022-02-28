@@ -3,6 +3,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +30,7 @@ namespace Dupery
             var personalities = new List<Personality>();
             var poolNames = new List<string>();
             int rejectCount = 0;
+            int startingPersonalityCount = 0;
             foreach (Dictionary<string, PersonalityOutline> map in personalityMaps)
             {
                 foreach (string nameStringKey in map.Keys)
@@ -49,6 +51,11 @@ namespace Dupery
                     {
                         personalities.Add(personality);
                         poolNames.Add(name);
+
+                        if (outline.StartingMinion)
+                        {
+                            startingPersonalityCount++;
+                        }
                     }
                     else
                     {
@@ -67,12 +74,13 @@ namespace Dupery
                 Logger.Log($"{rejectCount} personalities have the property \"Printable = false\" and wont be used.");
 
             // Add random personalities if there aren't enough in the pool
-            while (personalities.Count < PersonalityManager.MINIMUM_PERSONALITY_COUNT)
+            while (startingPersonalityCount < PersonalityManager.MINIMUM_PERSONALITY_COUNT)
             {
                 Personality substitutePersonality = PersonalityGenerator.RandomPersonality();
 
                 Logger.Log($"Not enough personalities, adding {substitutePersonality.Name} to pool.");
                 personalities.Add(substitutePersonality);
+                startingPersonalityCount++;
             }
 
             // Remove all personalities
@@ -88,6 +96,11 @@ namespace Dupery
             {
                 Db.Get().Personalities.Add(personality);
             }
+
+            // Recompute starting personalities
+            List<Personality> startingPersonalities = Db.Get().Personalities.resources.FindAll((Predicate<Personality>)(x => x.startingMinion));
+            var StartingMinionsField = typeof(Personalities).GetField("m_startingPersonalities", BindingFlags.Instance | BindingFlags.NonPublic);
+            StartingMinionsField.SetValue(Db.Get().Personalities, startingPersonalities);
         }
     }
 }
