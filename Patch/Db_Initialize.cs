@@ -69,7 +69,7 @@ namespace Dupery
 
             // Just logging stuff
             string poolReport = string.Join("\n", poolNames);
-            Logger.Log($"Pool contains {poolNames.Count} personalities:\n{poolReport}");
+            Logger.Log($"Pool contains {poolNames.Count} personalities ({startingPersonalityCount} starting personalities):\n{poolReport}");
             if (rejectCount > 0)
                 Logger.Log($"{rejectCount} personalities have the property \"Printable = false\" and wont be used.");
 
@@ -78,10 +78,12 @@ namespace Dupery
             {
                 Personality substitutePersonality = PersonalityGenerator.RandomPersonality();
 
-                Logger.Log($"Not enough personalities, adding {substitutePersonality.Name} to pool.");
+                Logger.Log($"Not enough starting personalities, adding {substitutePersonality.Name} to pool.");
                 personalities.Add(substitutePersonality);
                 startingPersonalityCount++;
             }
+
+            Logger.Log($"Adding {poolNames.Count} personalities to pool.");
 
             // Remove all personalities
             Db.Get().Personalities = new Personalities();
@@ -97,10 +99,7 @@ namespace Dupery
                 Db.Get().Personalities.Add(personality);
             }
 
-            // Recompute starting personalities
-            List<Personality> startingPersonalities = Db.Get().Personalities.resources.FindAll((Predicate<Personality>)(x => x.startingMinion));
-            var StartingMinionsField = typeof(Personalities).GetField("m_startingPersonalities", BindingFlags.Instance | BindingFlags.NonPublic);
-            StartingMinionsField.SetValue(Db.Get().Personalities, startingPersonalities);
+            Logger.Log($"Personality pool setup complete.");
         }
     }
 }
