@@ -158,6 +158,10 @@ namespace Dupery
             int hair = ChooseAccessoryNumber(Db.Get().AccessorySlots.Hair, Hair);
             int body = ChooseAccessoryNumber(Db.Get().AccessorySlots.Body, Body);
 
+            // Remember any custom accessories
+            DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Hair.Id, Hair);
+            DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Body.Id, Body);
+
             Personality personality = new Personality(
                 nameStringKey,
                 name,
@@ -231,7 +235,7 @@ namespace Dupery
             else
             {
                 int.TryParse(value, out accessoryNumber);
-                accessoryNumber = accessoryNumber > 0 ? accessoryNumber : DuperyPatches.AccessoryManager.GetAccessoryNumber(slot.Id, value);
+                accessoryNumber = accessoryNumber > 0 ? accessoryNumber : 1;
             }
 
             return accessoryNumber;
