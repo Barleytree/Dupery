@@ -57,27 +57,28 @@ namespace Dupery
                 if (mod.content_source == null)
                     continue;
 
-                ModLocalizers[mod.staticID] = new CheekyLocalizer(mod.content_source.GetRoot());
-
-                List<string> animNames = GetAnimNames(mod);
-                if (animNames != null && animNames.Count > 0)
-                {
-                    Logger.Log($"Found anims belonging to mod {mod.title}, searching for accessories.");
-
-                    int totalImported = 0;
-                    foreach (string animName in animNames)
-                    {
-                        Logger.Log($"Checking {animName}...");
-                        totalImported += AccessoryManager.LoadAccessories(animName, true);
-                    }
-
-                    Logger.Log($"{totalImported} accessories imported successfully.");
-                }
-
                 string personalitiesFilePath = Path.Combine(mod.content_source.GetRoot(), PersonalityManager.PERSONALITIES_FILE_NAME);
                 if (File.Exists(personalitiesFilePath))
                 {
-                    Logger.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod {mod.title}, attempting to import personalities...");
+                    Logger.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod {mod.title}, attempting to import personalities and accessories...");
+
+                    ModLocalizers[mod.staticID] = new CheekyLocalizer(mod.content_source.GetRoot());
+
+                    List<string> animNames = GetAnimNames(mod);
+                    if (animNames != null && animNames.Count > 0)
+                    {
+                        Logger.Log($"Found anims belonging to mod {mod.title}, searching for accessories.");
+
+                        int totalImported = 0;
+                        foreach (string animName in animNames)
+                        {
+                            Logger.Log($"Checking {animName}...");
+                            totalImported += AccessoryManager.LoadAccessories(animName, true);
+                        }
+
+                        Logger.Log($"{totalImported} accessories imported successfully.");
+                    }
+
                     PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod);
                 }
             }
