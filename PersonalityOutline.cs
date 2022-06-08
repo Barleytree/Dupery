@@ -14,6 +14,8 @@ namespace Dupery
         public bool Printable { get; set; } = true;
         [JsonProperty]
         public bool Randomize { get; set; } = false;
+        [JsonProperty]
+        public bool StartingMinion { get; set; } = true;
 
         // Personality properties
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -52,6 +54,7 @@ namespace Dupery
             PersonalityOutline p = overridingPersonality;
 
             Printable = p.Printable;
+            StartingMinion = p.StartingMinion;
             if (p.Name != null && p.Name != Name) { Name = p.Name; isModified = true; }
             if (p.Description != null && p.Description != Description) { Description = p.Description; isModified = true; }
             if (p.Gender != null && p.Gender != Gender) { Gender = p.Gender; isModified = true; }
@@ -155,6 +158,10 @@ namespace Dupery
             int hair = ChooseAccessoryNumber(Db.Get().AccessorySlots.Hair, Hair);
             int body = ChooseAccessoryNumber(Db.Get().AccessorySlots.Body, Body);
 
+            // Remember any custom accessories
+            DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Hair.Id, Hair);
+            DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Body.Id, Body);
+
             Personality personality = new Personality(
                 nameStringKey,
                 name,
@@ -170,7 +177,8 @@ namespace Dupery
                 eyes,
                 hair,
                 body,
-                description
+                description,
+                StartingMinion
             );
 
             return personality;
@@ -184,6 +192,7 @@ namespace Dupery
             PersonalityOutline jsonPersonality = new PersonalityOutline
             {
                 Printable = true,
+                StartingMinion = personality.startingMinion,
                 Name = name,
                 Description = description,
                 Gender = personality.genderStringKey,
@@ -226,7 +235,7 @@ namespace Dupery
             else
             {
                 int.TryParse(value, out accessoryNumber);
-                accessoryNumber = accessoryNumber > 0 ? accessoryNumber : DuperyPatches.AccessoryManager.GetAccessoryNumber(slot.Id, value);
+                accessoryNumber = accessoryNumber > 0 ? accessoryNumber : 1;
             }
 
             return accessoryNumber;

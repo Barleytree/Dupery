@@ -12,29 +12,16 @@ namespace Dupery
     {
         public AccessoryPool Pool { get { return this.accessoryPool; } }
 
-        private const string ID_CACHE_FILE_NAME = "accessory_id_cache.json";
-
         private AccessoryPool accessoryPool;
 
         public AccessoryManager()
         {
-            string idCacheFilePath = Path.Combine(DuperyPatches.DirectoryName, ID_CACHE_FILE_NAME);
-            accessoryPool = new AccessoryPool(idCacheFilePath);
+            accessoryPool = new AccessoryPool();
         }
 
-        public int GetAccessoryNumber(string slotId, string accessoryId)
+        public string TryGetAccessoryId(string slotId, string accessoryKey)
         {
-            return accessoryPool.GetAccessoryNumber(slotId, accessoryId);
-        }
-
-        public string TryGetAccessoryId(string slotId, int accessoryNumber)
-        {
-            if (accessoryPool.IsNativeAccessory(slotId, accessoryNumber))
-            {
-                return null;
-            }
-
-            return accessoryPool.GetId(slotId, accessoryNumber);
+            return accessoryPool.GetId(slotId, accessoryKey);
         }
 
         public int LoadAccessories(string animName, bool saveToCache = false)
@@ -81,9 +68,8 @@ namespace Dupery
 
                 if (cachable && saveToCache)
                 {
-                    bool saved = accessoryPool.TrySaveId(slot.Id, id);
-                    if (saved)
-                        numCached++;
+                    accessoryPool.AddId(slot.Id, id, id);
+                    numCached++;
                 }
 
                 numLoaded++;

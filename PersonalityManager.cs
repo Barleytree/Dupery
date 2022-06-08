@@ -22,6 +22,7 @@ namespace Dupery
         private Dictionary<string, PersonalityOutline> stockPersonalities;
         private Dictionary<string, PersonalityOutline> customPersonalities;
         private Dictionary<string, Dictionary<string, PersonalityOutline>> importedPersonalities;
+        private Dictionary<string, Dictionary<string, string>> accessoryOwnershipMap;
 
         public Dictionary<string, PersonalityOutline> StockPersonalities { get { return stockPersonalities; } }
         public Dictionary<string, PersonalityOutline> CustomPersonalities { get { return customPersonalities; } }
@@ -29,6 +30,8 @@ namespace Dupery
 
         public PersonalityManager()
         {
+            accessoryOwnershipMap = new Dictionary<string, Dictionary<string, string>>();
+
             // Load stock personalities
             stockPersonalities = new Dictionary<string, PersonalityOutline>();
 
@@ -104,6 +107,32 @@ namespace Dupery
             }
 
             return description;
+        }
+
+        public void TryAssignAccessory(string duplicantId, string slotId, string accessoryKey)
+        {
+            string accessoryId = DuperyPatches.AccessoryManager.TryGetAccessoryId(slotId, accessoryKey);
+            if (accessoryId != null)
+            {
+                if (!accessoryOwnershipMap.ContainsKey(duplicantId))
+                {
+                    accessoryOwnershipMap[duplicantId] = new Dictionary<string, string>();
+                }
+
+                accessoryOwnershipMap[duplicantId][slotId] = accessoryId;
+            }
+        }
+
+        public string FindOwnedAccessory(string duplicantId, string slotId)
+        {
+            string accessoryId = null;
+
+            if (accessoryOwnershipMap.ContainsKey(duplicantId))
+            {
+                accessoryOwnershipMap[duplicantId].TryGetValue(slotId, out accessoryId);
+            }
+
+            return accessoryId;
         }
 
         public bool TryImportPersonalities(string importFilePath, Mod mod)

@@ -15,14 +15,15 @@ namespace Dupery
         static void Apply(Database.AccessorySlots ___slots, KBatchedAnimController dupe, Personality personality)
         {
             KCompBuilder.BodyData bodyData = MinionStartingStats.CreateBodyData(personality);
-            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Hair, personality.hair, bodyData.hair);
-            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Body, personality.body, bodyData.body);
-            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Arm, personality.body, bodyData.arms);
+            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Hair, personality.nameStringKey, bodyData.hair);
+            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Body, personality.nameStringKey, bodyData.body);
+            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Arm, personality.nameStringKey, bodyData.arms);
         }
 
-        private static void AddAccessoryIfMissing(KBatchedAnimController dupe, AccessorySlot slot, int accessoryNumber, HashedString accessoryId)
+        private static void AddAccessoryIfMissing(KBatchedAnimController dupe, AccessorySlot slot, string duplicantId, HashedString accessoryId)
         {
-            if (!DuperyPatches.AccessoryManager.Pool.IsNativeAccessory(slot.Id, accessoryNumber))
+            string customAccessoryId = DuperyPatches.PersonalityManager.FindOwnedAccessory(duplicantId, slot.Id);
+            if (customAccessoryId != null)
             {
                 Accessory accessory = slot.accessories.Find((Predicate<Accessory>)(a => a.IdHash == accessoryId));
                 if (accessory == null)
