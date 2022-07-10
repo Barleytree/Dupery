@@ -21,101 +21,42 @@ namespace Dupery.Menu
                 }
             }
 
-            GameObject panel = MakeSprite("Panel", new Vector2(500, 399));
-            panel = Instantiate(panel, background.transform);
+            GameObject panel = InstantiateTexture("Panel", background, new Vector2(700, 580), Vector3.zero);
+            Image panelImage = panel.AddComponent<Image>();
 
-            GameObject header = MakeSprite("Header", new Vector2(30, 39));
-            Instantiate(header, panel.transform);
+            GameObject title = InstantiateTexture("Title", panel, new Vector2(30, 39), new Vector3(-350, -290, 0));
 
-            GameObject label = MakeLabel("Label", new Vector2(200, 40), "Testing");
-            Instantiate(label, background.transform);
+            GameObject titleLabel = InstantiateLabel("titleLabel", title, new Vector2(200, 40), Vector3.zero, "STRINGS.UI.CLOSE");
 
-            GameObject closeButton = MakeButton("CloseButton", new Vector2(20, 20));
-            closeButton = Instantiate(closeButton, background.transform);
+            GameObject closeButton = InstantiateButton("CloseButton", title, new Vector2(20, 20), Vector3.zero);
 
-            GameObject closeButtonSprite = MakeSprite("CloseButtonSprite", new Vector2(20, 19));
-            Instantiate(closeButtonSprite, closeButton.transform);
+            GameObject closeButtonSprite = InstantiateTexture("CloseButtonSprite", closeButton, new Vector2(20, 19), Vector3.zero);
+
+            GameObject moreButton = InstantiateButton("MoreButton", panel, new Vector2(20, 20), Vector3.zero);
+
+            GameObject moreButtonSprite = InstantiateTexture("MoreButtonSprite", moreButton, new Vector2(20, 19), Vector3.zero);
+
+            Personality personality = Db.Get().Personalities[0];
+            InstantiateDupeInfo(personality, panel);
 
             this.closeButton = closeButton.GetComponent<KButton>();
             this.closeButton.onClick += new System.Action(((KScreen)this).Deactivate);
         }
 
+        private void InstantiateDupeInfo(Personality personality, GameObject parent)
+        {
+            Sprite headSprite = DuperyPatches.AccessoryManager.GetAcessorySprite(Db.Get().AccessorySlots.HeadShape, personality.headShape);
+            GameObject headPreview = InstantiateSprite("HeadPreview", parent, headSprite, Vector3.zero);
+            headPreview.transform.localPosition = new Vector3(400, 0, 4);
+
+            Sprite hairSprite = DuperyPatches.AccessoryManager.GetAcessorySprite(Db.Get().AccessorySlots.Hair, personality.hair);
+            GameObject hairPreview = InstantiateSprite("HairPreview", parent, hairSprite, Vector3.zero);
+            hairPreview.transform.localPosition = new Vector3(0, 0, 4);
+        }
+
         protected override void AfterSpawn()
         {
-            Logger.Log("AFTERSPAWN");
-        }
-
-        public GameObject MakeUI(string name, Vector2 sizeDelta)
-        {
-            GameObject obj = new GameObject(name);
-
-            RectTransform rt = obj.AddComponent<RectTransform>();
-            rt.sizeDelta = sizeDelta;
-
-            return obj;
-        }
-
-        public GameObject MakeCanvas(string name, Vector2 sizeDelta)
-        {
-            GameObject obj = MakeUI(name, sizeDelta);
-            obj.AddComponent<CanvasRenderer>();
-
-            return obj;
-        }
-
-        public GameObject MakeSprite(string name, Vector2 sizeDelta, Texture2D tex = null)
-        {
-            GameObject obj = MakeCanvas(name, sizeDelta);
-            //var image = obj.AddComponent<Image>();
-            if (tex != null)
-            {
-                var sr = obj.AddComponent<KImage>();
-                sr.color = new Color(0.9f, 0.9f, 0.9f, 1.0f);
-                sr.sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
-            }
-
-            return obj;
-        }
-
-        public GameObject MakeLabel(string name, Vector2 sizeDelta, string text)
-        {
-            GameObject obj = MakeCanvas(name, sizeDelta);
-            obj.AddComponent<SetTextStyleSetting>();
-
-            //var lt = obj.AddComponent<LocText>();
-            //lt.text = "BLABLALA";
-            //lt.fontSize = (float)14;
-
-            return obj;
-        }
-
-        public GameObject MakeButton(string name, Vector2 sizeDelta, ColorStyleSetting style = null)
-        {
-            if (style == null)
-                style = defaultButtonStyle;
-
-            GameObject obj = MakeCanvas(name, sizeDelta);
-            obj.AddComponent<Canvas>();
-            obj.AddComponent<GraphicRaycaster>();
-
-            var kbutton = obj.AddComponent<KButton>();
-            var kimage = obj.AddComponent<KImage>();
-            kimage.colorStyleSetting = style;
-            kimage.ApplyColorStyleSetting();
-
-            kbutton.additionalKImages = new KImage[0];
-
-            return obj;
-        }
-
-        public GameObject MakeController(string name)
-        {
-            GameObject obj = new GameObject(name);
-
-            var kc = obj.AddComponent<KBatchedAnimController>();
-            var ka = kc.GetCurrentAnim();
-            
-            return obj;
+            DuperyDebug.LogObjectTree(gameObject);
         }
     }
 }

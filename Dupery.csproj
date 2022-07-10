@@ -71,11 +71,17 @@
     <Compile Include="AccessoryManager.cs" />
     <Compile Include="AccessoryPool.cs" />
     <Compile Include="CheekyLocalizer.cs" />
+    <Compile Include="DuperyDebug.cs" />
+    <Compile Include="Menu\DuperyScreen.cs" />
+    <Compile Include="Menu\PoolEditorScreen.cs" />
     <Compile Include="Patch\Db_Initialize.cs" />
     <Compile Include="Patch\Localization_Initialize.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Patch\MainMenu_OnPrefabInit.cs" />
     <Compile Include="Patch\MinionPersonalityPanel_RefreshBio.cs" />
     <Compile Include="Patch\MinionStartingStats_CreateBodyData.cs" />
+    <Compile Include="Patch\ModsScreen_BuildDisplay.cs" />
+    <Compile Include="Patch\ModeSelectScreen_OnSpawn.cs" />
     <Compile Include="PersonalityGenerator.cs" />
     <Compile Include="Exceptions\PersonalityLoadException.cs" />
     <Compile Include="PersonalityManager.cs" />

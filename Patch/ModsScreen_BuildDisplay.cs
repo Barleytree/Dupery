@@ -5,7 +5,6 @@ using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
-using Dupery.Menu;
 
 namespace Dupery.Patch
 {
@@ -16,7 +15,7 @@ namespace Dupery.Patch
         [HarmonyPostfix]
         static void PostFix(Transform ___entryParent, ModsScreen __instance, IList ___displayedMods)
         {
-            
+            DuperyDebug.LogObjectTree(__instance.gameObject);
         }
     }
 

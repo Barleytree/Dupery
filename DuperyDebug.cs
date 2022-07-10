@@ -22,21 +22,53 @@ namespace Dupery
             }
         }
 
-        public static void LogComponents(GameObject gameObject, int level=0)
+        public static void LogObjectTree(GameObject gameObject)
         {
-            String gap = new String(' ', level*2);
+            int depth = GetTransformDepth(gameObject.transform);
+
+            LogComponents(gameObject, depth);
+            foreach (Transform childTransform in gameObject.transform)
+            {
+                LogObjectTree(childTransform.gameObject);
+            }
+        }
+
+        public static int GetTransformDepth(Transform transform)
+        {
+            int depth = 0;
+
+            Transform parent = transform.parent;
+            while (parent != null)
+            {
+                depth += 1;
+                parent = parent.parent;
+            }
+
+            return depth;
+        }
+
+        public static void LogComponents(GameObject gameObject, int indent = 0)
+        {
+            String gap = new String(' ', indent * 2);
             Vector3 position = gameObject.transform.localPosition;
+            String parentName = gameObject.transform.parent != null ? gameObject.transform.parent.name : "?";
             Logger.Log($"{gap}[ {gameObject.name} ] ({position.x},{position.y},{position.z})");
 
             Component[] components = gameObject.GetComponents(typeof(Component));
             List<Component> otherComponents = new List<Component>();
             RectTransform rectTransform = null;
+            LocText locText = null;
+            SetTextStyleSetting setTextStyleSetting = null;
             Image image = null;
 
             foreach (Component component in components)
             {
                 if (component.GetType() == typeof(RectTransform))
                     rectTransform = (RectTransform)component;
+                else if (component.GetType() == typeof(LocText))
+                    locText = (LocText)component;
+                else if (component.GetType() == typeof(SetTextStyleSetting))
+                    setTextStyleSetting = (SetTextStyleSetting)component;
                 else if (component.GetType() == typeof(Image))
                     image = (Image)component;
                 else
@@ -45,8 +77,16 @@ namespace Dupery
 
             if (rectTransform != null)
                 Logger.Log($"{gap}RectTranform <{rectTransform.anchoredPosition.x},{rectTransform.anchoredPosition.y}> <{rectTransform.sizeDelta.x},{rectTransform.sizeDelta.y}>");
+
+            if (locText != null)
+                Logger.Log($"{gap}LocText ({locText.font}) {locText.text}");
+
+            if (setTextStyleSetting != null)
+                Logger.Log($"{gap}SetTextStyleSetting {setTextStyleSetting.ToString()}");
+
             if (image != null)
             {
+                Texture texture = image.mainTexture;
                 Sprite sprite = image.sprite;
                 if (sprite != null)
                 {
@@ -57,7 +97,7 @@ namespace Dupery
 
                     Rect r = sprite.rect;
                     Rect tr = sprite.textureRect;
-                    Logger.Log($"{gap}Image <{sprite.name}> rect<{r.width},{r.height}> tex<{tr.x},{tr.y}>({tr.width},{tr.height}) [{image.color}]");
+                    Logger.Log($"{gap}Image <{sprite.name}> rect<{r.width},{r.height}> tex<{tr.x},{tr.y}>({tr.width},{tr.height}) [{image.color}] [{texture.name}]");
                 }
                 else
                     Logger.Log($"{gap}Image");
@@ -66,11 +106,6 @@ namespace Dupery
             foreach (Component component in otherComponents)
             {
                 Logger.Log($"{gap}{component.GetType()}");
-            }
-
-            foreach (Transform transform in gameObject.transform)
-            {
-                LogComponents(transform.gameObject, level=level+1);
             }
         }
 
@@ -120,7 +155,7 @@ namespace Dupery
             {
                 pixelBlock = tex.GetPixels32();
             }
-            catch (UnityException _e)
+            catch (UnityException)
             {
                 tex.filterMode = FilterMode.Point;
                 RenderTexture rt = RenderTexture.GetTemporary(tex.width, tex.height);
@@ -136,6 +171,15 @@ namespace Dupery
             }
 
             return pixelBlock;
+        }
+
+        private Sprite loadSlide(string file)
+        {
+            double realtimeSinceStartup = (double)Time.realtimeSinceStartup;
+            Texture2D texture2D = new Texture2D(512, 768);
+            texture2D.filterMode = FilterMode.Point;
+            //texture2D.LoadImage(File.ReadAllBytes(file));
+            return Sprite.Create(texture2D, new UnityEngine.Rect(Vector2.zero, new Vector2((float)texture2D.width, (float)texture2D.height)), new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
         }
     }
 }
