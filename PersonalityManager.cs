@@ -148,7 +148,7 @@ namespace Dupery
                 return false;
             }
 
-            string overrideFileName = string.Format(OVERRIDE_IMPORT_FILE_NAME, mod.staticID);
+            string overrideFileName = string.Format(OVERRIDE_IMPORT_FILE_NAME, mod.staticID.Replace(" ", "_"));
             string overrideFilePath = Path.Combine(DuperyPatches.DirectoryName, overrideFileName);
             if (!File.Exists(overrideFilePath))
                 Logger.Log($"Creating {overrideFileName} override file for {mod.title}.");
