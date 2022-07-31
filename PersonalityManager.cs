@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Dupery
 {
@@ -133,6 +134,49 @@ namespace Dupery
             }
 
             return accessoryId;
+        }
+
+        public Sprite GetAcessorySprite(Personality personality, AccessorySlot slot)
+        {
+            int accessoryIndex = 1;
+            
+            string ownedAccessoryId = FindOwnedAccessory(personality.nameStringKey, slot.Id);
+            if (ownedAccessoryId != null)
+                accessoryIndex = 1;
+
+            Logger.Log($"SLOT {slot.Name} HAS {slot.accessories.Count} ACCESSORIES, TRYING {accessoryIndex}");
+            Accessory accessory = slot.accessories[accessoryIndex];
+            KAnim.Build.Symbol symbol = accessory.symbol;
+
+            Texture2D texture = accessory.symbol.build.GetTexture(0);
+
+            var symbolFrame = symbol.GetFrame(0).symbolFrame;
+            var imageIndex = symbol.GetFrame(0).buildImageIdx;
+
+            bool centered = true;
+
+            Debug.Assert((UnityEngine.Object)texture != (UnityEngine.Object)null, (object)("Invalid texture on " + accessory.IdHash));
+            float x1 = symbolFrame.uvMin.x;
+            float x2 = symbolFrame.uvMax.x;
+            float y1 = symbolFrame.uvMax.y;
+            float y2 = symbolFrame.uvMin.y;
+            int num1 = (int)((double)texture.width * (double)Mathf.Abs(x2 - x1));
+            int num2 = (int)((double)texture.height * (double)Mathf.Abs(y2 - y1));
+            float num3 = Mathf.Abs(symbolFrame.bboxMax.x - symbolFrame.bboxMin.x);
+            UnityEngine.Rect rect = new UnityEngine.Rect();
+            rect.width = (float)num1;
+            rect.height = (float)num2;
+            rect.x = (float)(int)((double)texture.width * (double)x1);
+            rect.y = (float)(int)((double)texture.height * (double)y1);
+            float pixelsPerUnit = 100f;
+            if (num1 != 0)
+                pixelsPerUnit = (float)(100.0 / ((double)num3 / (double)num1));
+            Sprite sprite = Sprite.Create(texture, rect, centered ? new Vector2(0.5f, 0.5f) : Vector2.zero, pixelsPerUnit, 0U, SpriteMeshType.FullRect);
+            sprite.name = string.Format("{0}:{1}:{2}:{3}", (object)texture.name, (object)"bodyPart", (object)imageIndex.ToString(), (object)centered);
+
+            Logger.Log($"SPRITE: {sprite.name}");
+
+            return sprite;
         }
 
         public bool TryImportPersonalities(string importFilePath, Mod mod)
