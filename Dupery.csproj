@@ -74,8 +74,10 @@
     <Compile Include="Patch\Db_Initialize.cs" />
     <Compile Include="Patch\Localization_Initialize.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Patch\MinionIdentity_OnSpawn.cs" />
     <Compile Include="Patch\MinionPersonalityPanel_RefreshBio.cs" />
     <Compile Include="Patch\MinionStartingStats_CreateBodyData.cs" />
+    <Compile Include="Patch\SymbolOverrideController_AddSymbolOverride.cs" />
     <Compile Include="PersonalityGenerator.cs" />
     <Compile Include="Exceptions\PersonalityLoadException.cs" />
     <Compile Include="PersonalityManager.cs" />
