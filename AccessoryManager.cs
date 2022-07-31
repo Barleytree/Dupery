@@ -49,6 +49,18 @@ namespace Dupery
                     slot = Db.Get().AccessorySlots.HatHair;
                     cachable = false;
                 }
+                else if (id.StartsWith("headshape_"))
+                {
+                    slot = Db.Get().AccessorySlots.HeadShape;
+                }
+                else if (id.StartsWith("mouth_"))
+                {
+                    slot = Db.Get().AccessorySlots.Mouth;
+                }
+                else if (id.StartsWith("eyes_"))
+                {
+                    slot = Db.Get().AccessorySlots.Eyes;
+                }
                 else if (id.StartsWith("body_"))
                 {
                     slot = Db.Get().AccessorySlots.Body;

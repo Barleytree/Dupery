@@ -149,18 +149,24 @@ namespace Dupery
             name = localizedName != null ? localizedName : name;
             description = localizedDescription != null ? localizedDescription : description;
 
-            // Uncustomisable accessories
+            // Customisable accessories
             int headShape = ChooseAccessoryNumber(Db.Get().AccessorySlots.HeadShape, HeadShape);
             int mouth = Mouth == null ? headShape : ChooseAccessoryNumber(Db.Get().AccessorySlots.Mouth, Mouth);
             int eyes = ChooseAccessoryNumber(Db.Get().AccessorySlots.Eyes, Eyes);
-
-            // Customisable accessories
             int hair = ChooseAccessoryNumber(Db.Get().AccessorySlots.Hair, Hair);
             int body = ChooseAccessoryNumber(Db.Get().AccessorySlots.Body, Body);
 
             // Remember any custom accessories
-            DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Hair.Id, Hair);
-            DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Body.Id, Body);
+            if (Hair != null)
+                DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Hair.Id, Hair);
+            if (HeadShape != null)
+                DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.HeadShape.Id, HeadShape);
+            if (Mouth != null)
+                DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Mouth.Id, Mouth);
+            if (Eyes != null)
+                DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Eyes.Id, Eyes);
+            if (Body != null)
+                DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Body.Id, Body);
 
             Personality personality = new Personality(
                 nameStringKey,
