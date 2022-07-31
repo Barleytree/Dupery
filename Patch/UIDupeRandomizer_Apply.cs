@@ -16,6 +16,9 @@ namespace Dupery
         {
             KCompBuilder.BodyData bodyData = MinionStartingStats.CreateBodyData(personality);
             AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Hair, personality.nameStringKey, bodyData.hair);
+            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.HeadShape, personality.nameStringKey, bodyData.headShape);
+            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Mouth, personality.nameStringKey, bodyData.mouth);
+            AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Eyes, personality.nameStringKey, bodyData.eyes);
             AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Body, personality.nameStringKey, bodyData.body);
             AddAccessoryIfMissing(dupe, Db.Get().AccessorySlots.Arm, personality.nameStringKey, bodyData.arms);
         }

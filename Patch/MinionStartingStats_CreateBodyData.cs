@@ -19,6 +19,18 @@ namespace Dupery
             if (hairId != null)
                 __result.hair = hairId;
 
+            HashedString headShapeId = FindNewId(Db.Get().AccessorySlots.HeadShape, p.nameStringKey);
+            if (headShapeId != null)
+                __result.headShape = headShapeId;
+
+            HashedString mouthId = FindNewId(Db.Get().AccessorySlots.Mouth, p.nameStringKey);
+            if (mouthId != null)
+                __result.mouth = mouthId;
+
+            HashedString eyesId = FindNewId(Db.Get().AccessorySlots.Eyes, p.nameStringKey);
+            if (eyesId != null)
+                __result.eyes = eyesId;
+
             HashedString bodyId = FindNewId(Db.Get().AccessorySlots.Body, p.nameStringKey);
             if (bodyId != null)
                 __result.body = bodyId;

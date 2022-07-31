@@ -18,6 +18,9 @@ namespace Dupery
             pool = new Dictionary<string, Dictionary<string, string>>
             {
                 { "Hair", new Dictionary<string, string>() },
+                { "HeadShape", new Dictionary<string, string>() },
+                { "Mouth", new Dictionary<string, string>() },
+                { "Eyes", new Dictionary<string, string>() },
                 { "Body", new Dictionary<string, string>() },
                 { "Arm", new Dictionary<string, string>() }
             };
