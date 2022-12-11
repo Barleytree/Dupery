@@ -60,6 +60,11 @@ namespace Dupery
             LocText locText = null;
             SetTextStyleSetting setTextStyleSetting = null;
             Image image = null;
+            KScrollRect scrollRect = null;
+            VerticalLayoutGroup vLayoutGroup = null;
+            ContentSizeFitter sizeFitter = null;
+            HierarchyReferences hierarchy = null;
+            DragMe dragMe = null;
 
             foreach (Component component in components)
             {
@@ -71,6 +76,16 @@ namespace Dupery
                     setTextStyleSetting = (SetTextStyleSetting)component;
                 else if (component.GetType() == typeof(Image))
                     image = (Image)component;
+                else if (component.GetType() == typeof(KScrollRect))
+                    scrollRect = (KScrollRect)component;
+                else if (component.GetType() == typeof(VerticalLayoutGroup))
+                    vLayoutGroup = (VerticalLayoutGroup)component;
+                else if (component.GetType() == typeof(ContentSizeFitter))
+                    sizeFitter = (ContentSizeFitter)component;
+                else if (component.GetType() == typeof(HierarchyReferences))
+                    hierarchy = (HierarchyReferences)component;
+                else if (component.GetType() == typeof(DragMe))
+                    dragMe = (DragMe)component;
                 else
                     otherComponents.Add(component);
             }
@@ -83,6 +98,21 @@ namespace Dupery
 
             if (setTextStyleSetting != null)
                 Logger.Log($"{gap}SetTextStyleSetting {setTextStyleSetting.ToString()}");
+
+            if (scrollRect != null)
+                Logger.Log($"{gap}ScrollRect -{scrollRect.content.name}- ({scrollRect.flexibleHeight},{scrollRect.flexibleWidth}) ({scrollRect.minHeight},{scrollRect.minWidth}) ({scrollRect.flexibleHeight},{scrollRect.flexibleWidth}) ({scrollRect.layoutPriority},{scrollRect.forceContentMatchWidth})");
+
+            if (vLayoutGroup != null)
+                Logger.Log($"{gap}vLayoutGroup ({vLayoutGroup.preferredHeight}, {vLayoutGroup.preferredWidth})");
+
+            if (sizeFitter != null)
+                Logger.Log($"{gap}sizeFitter ({sizeFitter.verticalFit}, {sizeFitter.horizontalFit})");
+
+            if (hierarchy != null)
+                Logger.Log($"{gap}hierarchy ({hierarchy.references})");
+
+            if (dragMe != null)
+                Logger.Log($"{gap}dragMe ({dragMe.listener})");
 
             if (image != null)
             {

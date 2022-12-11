@@ -31,6 +31,15 @@ namespace Dupery.Menu
             return obj;
         }
 
+        public GameObject InstantiateUIObject(string name, GameObject parent, Vector2 sizeDelta, Vector3 position)
+        {
+            GameObject obj = MakeUIObject(name, sizeDelta);
+
+            obj = Instantiate(obj, parent.transform);
+            obj.transform.localPosition = position;
+            return obj;
+        }
+
         public GameObject InstantiateTexture(string name, GameObject parent, Vector2 sizeDelta, Vector3 position, Texture2D tex = null)
         {
             GameObject obj = MakeCanvasObject(name, sizeDelta);

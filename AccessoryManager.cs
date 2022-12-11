@@ -25,6 +25,11 @@ namespace Dupery
             return accessoryPool.GetId(slotId, accessoryKey);
         }
 
+        public int TryGetAccessoryIndex(string slotId, string accessoryKey)
+        {
+            return Int32.Parse(accessoryKey);
+        }
+
         public int LoadAccessories(string animName, bool saveToCache = false)
         {
             ResourceSet accessories = Db.Get().Accessories;

@@ -136,13 +136,15 @@ namespace Dupery
             return accessoryId;
         }
 
-        public Sprite GetAcessorySprite(Personality personality, AccessorySlot slot)
+        public Sprite GetAcessorySprite(AccessorySlot slot, string accessoryKey)
         {
-            int accessoryIndex = 1;
-            
-            string ownedAccessoryId = FindOwnedAccessory(personality.nameStringKey, slot.Id);
-            if (ownedAccessoryId != null)
+            int accessoryIndex = DuperyPatches.AccessoryManager.TryGetAccessoryIndex(slot.Id, accessoryKey);
+            if (accessoryIndex <= 0 || accessoryIndex >= slot.accessories.Count)
                 accessoryIndex = 1;
+
+            // string ownedAccessoryId = FindOwnedAccessory(personality.nameStringKey, slot.Id);
+            // if (ownedAccessoryId != null)
+            //     accessoryIndex = 1;
 
             Logger.Log($"SLOT {slot.Name} HAS {slot.accessories.Count} ACCESSORIES, TRYING {accessoryIndex}");
             Accessory accessory = slot.accessories[accessoryIndex];
