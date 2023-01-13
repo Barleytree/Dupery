@@ -49,20 +49,12 @@ namespace Dupery
                     slot = Db.Get().AccessorySlots.HatHair;
                     cachable = false;
                 }
-                else if (id.StartsWith("body_"))
-                {
-                    slot = Db.Get().AccessorySlots.Body;
-                }
-                else if (id.StartsWith("arm_"))
-                {
-                    slot = Db.Get().AccessorySlots.Arm;
-                }
                 else
                 {
                     continue;
                 }
 
-                Accessory accessory = new Accessory(id, accessories, slot, anim.batchTag, build.symbols[index]);
+                Accessory accessory = new Accessory(id, accessories, slot, anim.batchTag, build.symbols[index], anim);
                 slot.accessories.Add(accessory);
                 Db.Get().ResourceTable.Add(accessory);
 

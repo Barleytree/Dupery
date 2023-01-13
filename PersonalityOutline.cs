@@ -160,7 +160,6 @@ namespace Dupery
 
             // Remember any custom accessories
             DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Hair.Id, Hair);
-            DuperyPatches.PersonalityManager.TryAssignAccessory(nameStringKey, Db.Get().AccessorySlots.Body.Id, Body);
 
             Personality personality = new Personality(
                 nameStringKey,

@@ -18,14 +18,6 @@ namespace Dupery
             HashedString hairId = FindNewId(Db.Get().AccessorySlots.Hair, p.nameStringKey);
             if (hairId != null)
                 __result.hair = hairId;
-
-            HashedString bodyId = FindNewId(Db.Get().AccessorySlots.Body, p.nameStringKey);
-            if (bodyId != null)
-                __result.body = bodyId;
-
-            HashedString armId = FindNewId(Db.Get().AccessorySlots.Arm, p.nameStringKey);
-            if (armId != null)
-                __result.arms = armId;
         }
 
         private static HashedString FindNewId(AccessorySlot slot, string duplicantId)
