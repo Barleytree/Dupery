@@ -23,6 +23,9 @@ namespace Dupery
 
         public string GetId(string slotId, string accessoryKey)
         {
+            if (!pool.ContainsKey(slotId))
+                return null;
+
             pool[slotId].TryGetValue(accessoryKey, out string id);
             return id;
         }
