@@ -4,6 +4,7 @@ using KMod;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Dupery
 {
@@ -58,7 +59,24 @@ namespace Dupery
                     continue;
 
                 string personalitiesFilePath = Path.Combine(mod.content_source.GetRoot(), PersonalityManager.PERSONALITIES_FILE_NAME);
-                if (File.Exists(personalitiesFilePath))
+
+                if (!File.Exists(personalitiesFilePath)) {
+                    personalitiesFilePath = null;
+
+                    string[] files = Directory.GetFiles(mod.content_source.GetRoot());
+                    Regex rx = new Regex(@"personalities\.json", RegexOptions.IgnoreCase);
+                    
+                    foreach (string file in files)
+                    {
+                        Match curr_rx = rx.Match(Path.GetFileName(file));
+                        if (curr_rx.Success) {
+                            personalitiesFilePath = file;
+                            break;
+                        }
+                    }
+                }
+                
+                if (personalitiesFilePath != null && File.Exists(personalitiesFilePath))
                 {
                     Logger.Log($"Found {PersonalityManager.PERSONALITIES_FILE_NAME} file belonging to mod {mod.title}, attempting to import personalities and accessories...");
 
